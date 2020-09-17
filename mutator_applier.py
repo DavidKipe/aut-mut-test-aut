@@ -19,7 +19,7 @@ def apply_mutator(file_to_change, mut_info):
 			for line in orig_file:
 				if cur_line_number == mut_info.line_number: # if this is the line to mutate
 					leading_spaces = len(line) - len(line.lstrip()) # calculate the identation of this line
-					indentation = leading_spaces * identation_format #
+					indentation = leading_spaces * indentation_format #
 					mutating_file.write(indentation + '//' + line.strip() + orig_line_tag + '\n') # write the orig line commented
 					mutating_file.write(indentation + mut_info.mutated_line + mutate_line_tag + '\n') # write the mutated line
 				else:
