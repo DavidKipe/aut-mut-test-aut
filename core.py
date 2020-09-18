@@ -17,8 +17,8 @@ async def main():
 	event_loop = asyncio.get_event_loop()
 	event_loop.run_in_executor(None, run_mutated_application)
 
-	#time.sleep(10)
-	#run_testsuite_1()
+	time.sleep(10)
+	run_testsuite_1(0, None)
 
 	# tasks = asyncio.all_tasks(event_loop)
 	# for t in tasks:

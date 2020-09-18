@@ -3,6 +3,8 @@ from mutationinfo import *
 
 import json
 import subprocess
+import os
+from shutil import copyfile
 
 
 def read_mut_infos_from_file():
@@ -16,13 +18,32 @@ def read_mut_infos_from_file():
 	return mut_infos
 
 
+def save_mutant(file_mutated, mut_info):
+	if not os.path.exists(mutants_dir):
+		os.mkdir(mutants_dir)
+
+	cur_mutant_dir = os.path.join(mutants_dir, 'mutant_' + str(mut_info.id))
+
+	if not os.path.exists(cur_mutant_dir):
+		os.mkdir(cur_mutant_dir)
+
+	copyfile(file_mutated, os.path.join(cur_mutant_dir, mut_info.source_filename))
+
+	with open(os.path.join(cur_mutant_dir, 'mutant_' + str(mut_info.id) + '.json'), 'w') as mut_info_file:
+		json.dump(mut_info.to_dict(), mut_info_file, ensure_ascii=False, indent=4)
+
+
 def run_mutated_application():
-	print("run petclinic")
+	print("Running mutated application...")
 	return subprocess.run([run_app_command], cwd=app_rootdir, shell=True)
 
 
-def run_testsuite_1():
-	print("run test suite 1")
-	with open('output_testsuite_1.txt', 'w') as f:
-		completed_process = subprocess.run([run_testsuite_1_command], cwd=testsuite_1_rootdir, shell=True, encoding='ascii', stdout=f)
+def run_testsuite_1(mutant_id, exec_time):
+	print("Running test suite 1 for mutant {}".format(mutant_id))
+
+	with open('output_testsuite_1_mutant_{}.txt'.format(mutant_id), 'w') as f:
+		completed_process = subprocess.run([run_testsuite_1_command], cwd=testsuite_1_rootdir, shell=True, encoding='utf-8', stderr=subprocess.STDOUT, stdout=f)
+
+	print("Test suite 1 for mutant {} completed".format(mutant_id))
+
 	return completed_process

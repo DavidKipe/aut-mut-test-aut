@@ -18,8 +18,8 @@ source_rootdir = app_rootdir + 'src/main/java/' # root directory of the source c
 mutants_dir = app_rootdir + 'mutants/'          # directory of the mutant files
 #
 
-run_app_command = 'mvn spring-javaformat:apply spring-boot:run'
-run_testsuite_1_command = 'mvn test'
-run_testsuite_2_command = 'mvn test'
+run_app_command = 'mvn spring-javaformat:apply spring-boot:run -B'
+run_testsuite_1_command = 'mvn test -B'
+run_testsuite_2_command = 'mvn test -B'
 
 ##  ##

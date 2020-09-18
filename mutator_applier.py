@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-from config import *
-from mutationinfo import *
+from utils import *
 
 from shutil import copyfile
 import os
-import json
 
 
 def apply_mutator(file_to_change, mut_info):
@@ -26,14 +24,7 @@ def apply_mutator(file_to_change, mut_info):
 					mutating_file.write(line) # otherwise copy the line
 				cur_line_number += 1
 
-	#TODO utils func
-	#os.mkdir(mutants_dir)
-	cur_mutant_dir = os.path.join(mutants_dir, 'mutant_' + str(mut_info.id))
-	#os.mkdir(cur_mutant_dir)
-	copyfile(file_to_change, os.path.join(cur_mutant_dir, mut_info.source_filename))
-
-	with open(os.path.join(cur_mutant_dir, 'mutant_' + str(mut_info.id) + '.json'), 'w') as mut_info_file:
-		json.dump(mut_info.to_dict(), mut_info_file, ensure_ascii=False, indent=4)
+	save_mutant(file_to_change, mut_info)
 
 
 def revert_proj_to_orig():
