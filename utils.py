@@ -33,17 +33,37 @@ def save_mutant(file_mutated, mut_info):
 		json.dump(mut_info.to_dict(), mut_info_file, ensure_ascii=False, indent=4)
 
 
-def run_mutated_application():
-	print("Running mutated application...")
-	return subprocess.run([run_app_command], cwd=app_rootdir, shell=True)
+def output_file(mutant_id, start_time_str, testsuite_name):
+	out_file = "output"
+	if not os.path.exists(out_file):
+		os.mkdir(out_file)
+
+	out_file = os.path.join(out_file, start_time_str)
+	if not os.path.exists(out_file):
+		os.mkdir(out_file)
+
+	out_file = os.path.join(out_file, "mutant_{}".format(mutant_id))
+	if not os.path.exists(out_file):
+		os.mkdir(out_file)
+
+	out_file = os.path.join(out_file, "{}.txt".format(testsuite_name))
+
+	return out_file
 
 
-def run_testsuite_1(mutant_id, exec_time):
-	print("Running test suite 1 for mutant {}".format(mutant_id))
+def run_testsuite(mutant_id, start_time_str, testsuite_rootdir, testsuite_command, testsuite_name):
+	out_file = output_file(mutant_id, start_time_str, testsuite_name)
 
-	with open('output_testsuite_1_mutant_{}.txt'.format(mutant_id), 'w') as f:
-		completed_process = subprocess.run([run_testsuite_1_command], cwd=testsuite_1_rootdir, shell=True, encoding='utf-8', stderr=subprocess.STDOUT, stdout=f)
+	print("Running test suite '{}' for mutant {} ...".format(testsuite_name, mutant_id))
 
-	print("Test suite 1 for mutant {} completed".format(mutant_id))
+	with open(out_file, 'w') as f:
+		completed_process = subprocess.run([testsuite_command], cwd=testsuite_rootdir, shell=True, encoding='utf-8', stderr=subprocess.STDOUT, stdout=f)
+
+	print("Test suite '{}' for mutant {} completed".format(testsuite_name, mutant_id))
 
 	return completed_process
+
+
+def run_testsuite_selenium(mutant_id, start_time_str):
+	return run_testsuite(mutant_id, start_time_str, testsuite_1_rootdir, run_testsuite_1_command, "selenium")
+

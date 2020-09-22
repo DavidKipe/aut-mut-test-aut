@@ -1,33 +1,34 @@
 #!/usr/bin/env python3
 
-from utils import *
-from mutationinfos_converter import *
+from mutated_app_manager import MutatedAppManager
 from mutator_applier import *
+from mutationinfos_converter import convert_pit_xml_to_mut_infos_json
 
-import time
 import asyncio
+from datetime import datetime
 
 
 async def main():
-	#convert()
-	#mut_infos = read_mut_infos_from_file()
+	start_time_str = datetime.now().strftime("%Y%m%d-%H%M%S")
+
 	revert_proj_to_orig()
-	#mutate_code([mut_infos[0]])
+	convert_pit_xml_to_mut_infos_json()
+	mut_infos = read_mut_infos_from_file()
 
-	event_loop = asyncio.get_event_loop()
-	event_loop.run_in_executor(None, run_mutated_application)
+	mutated_app_manager = MutatedAppManager()
 
-	time.sleep(10)
-	run_testsuite_1(0, None)
+	for mut_info in mut_infos:
+		revert_proj_to_orig()  # revert code to original
 
-	# tasks = asyncio.all_tasks(event_loop)
-	# for t in tasks:
-	# 	print("cancel task" + str(t))
-	# 	t.cancel()
-	# 	print(t.cancelled())
-	#
-	# event_loop.stop()
-	# event_loop.close()
+		mutate_code([mut_info])  # apply the new mutator
+
+		mutated_app_manager.run()  # run the application mutated
+
+		mutated_app_manager.wait_until_ready()  # wait until application is ready to use
+
+		run_testsuite_selenium(mut_info.id, start_time_str)  # run the test suite and save the result
+
+		mutated_app_manager.stop()  # close application
 
 
 if __name__ == '__main__':

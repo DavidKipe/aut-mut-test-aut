@@ -70,7 +70,7 @@ def create_mutated_line(mutator_type, orig_line):
 	if mutator_type == MutatorType.UNKNOWN:
 		return #TODO
 
-	if mutator_type.value > 1000: # there is a function to call to get the mutated line
+	if mutator_type.value > 1000:  # there is a function to call to get the mutated line
 		mutator_func = map_mutated_lines[mutator_type]
 		mutated_line = mutator_func(orig_line)
 	else:
@@ -79,11 +79,11 @@ def create_mutated_line(mutator_type, orig_line):
 	return mutated_line
 
 
-def convert():
+def convert_pit_xml_to_mut_infos_json():
 	map_mut_type_counters = { mut_type.name: 0 for mut_type in map_mutated_lines }
 
 	tree = ET.parse(pit_xml_report_filename)
-	xml_root = tree.getroot() # root = mutations tag
+	xml_root = tree.getroot()  # root = mutations tag
 
 	mutations_dict = {}
 	mutations_dict['mutations'] = []
@@ -115,4 +115,4 @@ def convert():
 
 
 if __name__ == '__main__':
-	print(convert())
+	print(convert_pit_xml_to_mut_infos_json())

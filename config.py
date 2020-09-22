@@ -1,8 +1,8 @@
 
 ## configurations ##
 
-pit_xml_report_filename = 'mutations.xml'
-mut_infos_json_filename = 'mutations.json'
+pit_xml_report_filename = 'resources/mutations.xml'
+mut_infos_json_filename = 'resources/mutations.json'
 
 app_rootdir = '/home/david/IdeaProjects/spring-petclinic-mutation/'    # root directory of the application
 testsuite_1_rootdir = '/home/david/IdeaProjects/petclinic-test-suite-selenium/'
@@ -15,10 +15,12 @@ indentation_format = '\t'				# could be either '\t' (tab) or ' ' (*one* space)
 
 # derived
 source_rootdir = app_rootdir + 'src/main/java/' # root directory of the source code
-mutants_dir = app_rootdir + 'mutants/'          # directory of the mutant files
+mutants_dir = app_rootdir + 'mutants/'          # directory of the mutant files inside the root app dir
 #
 
 run_app_command = 'mvn spring-javaformat:apply spring-boot:run -B'
+app_ready_stdout_signal = "Started PetClinicApplication in"
+
 run_testsuite_1_command = 'mvn test -B'
 run_testsuite_2_command = 'mvn test -B'
 
