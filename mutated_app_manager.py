@@ -34,7 +34,7 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 			with self._proc.stdout as stdout:
 				for stdout_line in stdout:
 					line_decoded = stdout_line.decode()
-					print(line_decoded, end='')
+					#print(line_decoded, end='')
 					if self._rdy_event.is_set() is False and app_ready_stdout_signal in line_decoded:
 						self._rdy_event.set()
 

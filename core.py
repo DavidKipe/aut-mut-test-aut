@@ -16,19 +16,21 @@ async def main():
 	mut_infos = read_mut_infos_from_file()
 
 	mutated_app_manager = MutatedAppManager()
+	list_of_testsuite_funcs_to_run = [run_testsuite_assertions, run_testsuite_retest_expl]
 
 	for mut_info in mut_infos:
 		revert_proj_to_orig()  # revert code to original
 
 		mutate_code([mut_info])  # apply the new mutator
 
-		mutated_app_manager.run()  # run the application mutated
+		for testsuite_func in list_of_testsuite_funcs_to_run:
+			mutated_app_manager.run()  # run the application mutated
 
-		mutated_app_manager.wait_until_ready()  # wait until application is ready to use
+			mutated_app_manager.wait_until_ready()  # wait until application is ready to use
 
-		run_testsuite_selenium(mut_info.id, start_time_str)  # run the test suite and save the result
+			testsuite_func(mut_info.id, start_time_str)  # run the test suite and save the result
 
-		mutated_app_manager.stop()  # close application
+			mutated_app_manager.stop()  # close application
 
 
 if __name__ == '__main__':

@@ -5,8 +5,9 @@ pit_xml_report_filename = 'resources/mutations.xml'
 mut_infos_json_filename = 'resources/mutations.json'
 
 app_rootdir = '/home/david/IdeaProjects/spring-petclinic-mutation/'    # root directory of the application
-testsuite_1_rootdir = '/home/david/IdeaProjects/petclinic-test-suite-selenium/'
-testsuite_2_rootdir = '/home/david/IdeaProjects/petclinic-test-suite-recheck/'
+testsuite_assertions_rootdir = '/home/david/IdeaProjects/petclinic-test-suite/'
+testsuite_retest_expl_rootdir = '/home/david/IdeaProjects/petclinic-test-suite/'
+testsuite_retest_impl_rootdir = '/home/david/IdeaProjects/petclinic-test-suite/'
 
 backup_ext = '.bak'						# this string will be appened to the original filename
 orig_line_tag = ' // original line'		# this string will be appened to the original commented line
@@ -21,7 +22,8 @@ mutants_dir = app_rootdir + 'mutants/'          # directory of the mutant files 
 run_app_command = 'mvn spring-javaformat:apply spring-boot:run -B'
 app_ready_stdout_signal = "Started PetClinicApplication in"
 
-run_testsuite_1_command = 'mvn test -B'
-run_testsuite_2_command = 'mvn test -B'
+run_testsuite_assertions_command = 'mvn -Dtest="assertions.**" -Djava.awt.headless=true test -B'
+run_testsuite_retest_expl_command = 'mvn -Dtest="recheck.explicit.**" -Djava.awt.headless=true test -B'
+run_testsuite_retest_impl_command = 'mvn -Dtest="recheck.implicit.**" -Djava.awt.headless=true test -B'
 
 ##  ##

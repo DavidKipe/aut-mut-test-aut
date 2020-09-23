@@ -51,8 +51,8 @@ def output_file(mutant_id, start_time_str, testsuite_name):
 	return out_file
 
 
-def run_testsuite(mutant_id, start_time_str, testsuite_rootdir, testsuite_command, testsuite_name):
-	out_file = output_file(mutant_id, start_time_str, testsuite_name)
+def run_testsuite(mutant_id, start_time_str, testsuite_rootdir, testsuite_command, testsuite_name, testsuite_tag):
+	out_file = output_file(mutant_id, start_time_str, testsuite_tag)
 
 	print("Running test suite '{}' for mutant {} ...".format(testsuite_name, mutant_id))
 
@@ -64,6 +64,13 @@ def run_testsuite(mutant_id, start_time_str, testsuite_rootdir, testsuite_comman
 	return completed_process
 
 
-def run_testsuite_selenium(mutant_id, start_time_str):
-	return run_testsuite(mutant_id, start_time_str, testsuite_1_rootdir, run_testsuite_1_command, "selenium")
+def run_testsuite_assertions(mutant_id, start_time_str):
+	return run_testsuite(mutant_id, start_time_str, testsuite_assertions_rootdir, run_testsuite_assertions_command, "Selenium assertions", "selenium")
 
+
+def run_testsuite_retest_expl(mutant_id, start_time_str):
+	return run_testsuite(mutant_id, start_time_str, testsuite_retest_expl_rootdir, run_testsuite_retest_expl_command, "ReTest Recheck explicit check", "retest_explicit")
+
+
+def run_testsuite_retest_impl(mutant_id, start_time_str):
+	return run_testsuite(mutant_id, start_time_str, testsuite_retest_impl_rootdir, run_testsuite_retest_impl_command, "ReTest Recheck implicit check", "retest_implicit")
