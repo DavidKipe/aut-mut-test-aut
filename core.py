@@ -24,13 +24,17 @@ async def main():
 		mutate_code([mut_info])  # apply the new mutator
 
 		for testsuite_func in list_of_testsuite_funcs_to_run:
-			mutated_app_manager.run()  # run the application mutated
+			mutated_app_manager.run_async()  # run the application mutated
 
 			mutated_app_manager.wait_until_ready()  # wait until application is ready to use
+			# TODO save an alert for timeout elapsed
 
-			testsuite_func(mut_info.id, start_time_str)  # run the test suite and save the result
+			testsuite_func(mut_info, start_time_str)  # run the test suite and save the result
 
-			mutated_app_manager.stop()  # close application
+			output = mutated_app_manager.stop()  # close application
+			save_app_output(mut_info.id, start_time_str, output)
+
+		print(json.dumps(mut_info.to_dict(), ensure_ascii=False, indent=4))
 
 
 if __name__ == '__main__':

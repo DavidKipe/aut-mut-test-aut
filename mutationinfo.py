@@ -1,7 +1,8 @@
 # Python 3.7+ needed
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from enum import Enum
+from typing import List
 
 
 class MutatorType(Enum):
@@ -18,6 +19,17 @@ class MutatorType(Enum):
 
 
 @dataclass
+class MutationResult:
+	test_suite_name: str
+	test_suite_success: bool = True
+	total_tests: int = 0
+	tests_passed: int = 0
+	tests_failed: int = 0
+	tests_error: int = 0
+	tests_skipped: int = 0
+
+
+@dataclass
 class MutationInfo:
 	id: int = 0
 	source_filename: str = ''
@@ -26,6 +38,10 @@ class MutationInfo:
 	original_line: str = ''
 	mutated_line: str = ''
 	mutator_type: MutatorType = None
+	mutation_results: List[MutationResult] = field(default_factory=list)  # optional
+
+	def add_result(self, mut_result):
+		self.mutation_results.append(mut_result)
 
 	def to_dict(self):
 		mut_info_dict = {}
@@ -35,7 +51,21 @@ class MutationInfo:
 		mut_info_dict['lineNumber'] =		self.line_number
 		mut_info_dict['originalLine'] =		self.original_line
 		mut_info_dict['mutatedLine'] =		self.mutated_line
-		mut_info_dict['mutatorTag'] =		self.mutator_type.name
+		mut_info_dict['mutatorTag'] =		self.mutator_type.name # TODO check if exists
+
+		if self.mutation_results:
+			mut_result_dicts = list()
+			for mut_result in self.mutation_results:
+				mut_result_dict = {}
+				mut_result_dict['testSuiteName'] = mut_result.test_suite_name
+				mut_result_dict['testSuiteSuccess'] = mut_result.test_suite_success
+				mut_result_dict['totalTests'] = mut_result.total_tests
+				mut_result_dict['testsPassed'] = mut_result.tests_passed
+				mut_result_dict['testsFailed'] = mut_result.tests_failed
+				mut_result_dict['testsError'] = mut_result.tests_error
+				mut_result_dicts.append(mut_result_dict)
+			mut_info_dict['mutationResults'] = mut_result_dicts
+
 		return mut_info_dict
 
 
