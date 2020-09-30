@@ -24,7 +24,7 @@ def apply_mutator(file_to_change, mut_info):
 					mutating_file.write(line) # otherwise copy the line
 				cur_line_number += 1
 
-	save_mutant(file_to_change, mut_info)
+	save_mutant_and_mut_info(file_to_change, mut_info)
 
 
 def revert_proj_to_orig():
@@ -36,9 +36,8 @@ def revert_proj_to_orig():
 				os.remove(abspath)
 
 
-def mutate_code(mutator_info_array):
-	for mut_info in mutator_info_array:
-		apply_mutator(os.path.join(source_rootdir, mut_info.rel_folder_path, mut_info.source_filename), mut_info)
+def mutate_code(mutator_info):
+	apply_mutator(os.path.join(source_rootdir, mutator_info.rel_folder_path, mutator_info.source_filename), mutator_info)
 
 
 id = 0
@@ -49,6 +48,6 @@ new_line_text = 'return "";'
 
 
 if __name__ == '__main__':
-	mi_array = [MutationInfo(id, filename, path, line_to_change, '', new_line_text, None)]
+	mi = MutationInfo(id, filename, path, line_to_change, '', new_line_text, None)
 	revert_proj_to_orig()
-	mutate_code(mi_array)
+	mutate_code(mi)

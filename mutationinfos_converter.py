@@ -65,12 +65,10 @@ def get_mutator_type(pit_mutator_descr):
 
 
 def create_mutated_line(mutator_type, orig_line):
-	mutated_line = ''
-
 	if mutator_type == MutatorType.UNKNOWN:
 		return #TODO
 
-	if mutator_type.value > 1000:  # there is a function to call to get the mutated line
+	if mutator_type.value > 1000:  # there is a function to call to get the mutated line if the value is above 1000
 		mutator_func = map_mutated_lines[mutator_type]
 		mutated_line = mutator_func(orig_line)
 	else:

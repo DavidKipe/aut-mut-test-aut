@@ -22,6 +22,7 @@ mutants_dir = app_rootdir + 'mutants/'          # directory of the mutant files 
 run_app_command = 'mvn spring-javaformat:apply spring-boot:run -B'
 app_ready_stdout_signal = "Started PetClinicApplication in"
 
+# must be only Maven commands
 run_testsuite_assertions_command = 'mvn -Dtest="assertions.**" -Djava.awt.headless=true test -B'
 run_testsuite_retest_expl_command = 'mvn -Dtest="recheck.explicit.**" -Djava.awt.headless=true test -B'
 run_testsuite_retest_impl_command = 'mvn -Dtest="recheck.implicit.**" -Djava.awt.headless=true test -B'
