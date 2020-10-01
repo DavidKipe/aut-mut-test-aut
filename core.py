@@ -3,12 +3,13 @@
 from mutated_app_manager import MutatedAppManager
 from mutator_applier import *
 from mutationinfos_converter import convert_pit_xml_to_mut_infos_json
-from csv_results import append_result
+from csv_results import CSVTotalResultManager
 
 import asyncio
 from datetime import datetime
 
 # TODO organize import
+# TODO manage exception to shutdown correctly
 
 async def main():
 	start_time_str = datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -19,6 +20,7 @@ async def main():
 
 	mutated_app_manager = MutatedAppManager()
 	list_of_testsuite_funcs_to_run = [run_testsuite_assertions, run_testsuite_retest_expl]
+	csv_results_manage = CSVTotalResultManager(start_time_str, len(list_of_testsuite_funcs_to_run))
 
 	for mut_info in mut_infos:
 		revert_proj_to_orig()  # revert code to original
@@ -38,7 +40,7 @@ async def main():
 
 		#print(json.dumps(mut_info.to_dict(), ensure_ascii=False, indent=4))
 		save_mut_info(mut_info, start_time_str)
-		append_result(mut_info, start_time_str)
+		csv_results_manage.append_result(mut_info)
 
 
 if __name__ == '__main__':

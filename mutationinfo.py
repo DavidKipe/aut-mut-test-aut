@@ -28,6 +28,7 @@ class MutationTestsResult:
 	failed_tests: int = 0
 	error_tests: int = 0
 	skipped_tests: int = 0
+	time: float = 0.0
 
 
 @dataclass
@@ -66,7 +67,8 @@ class MutationInfo:
 					'passed': mut_result.passed_tests,
 					'failed': mut_result.failed_tests,
 					'error': mut_result.error_tests,
-					'skipped': mut_result.skipped_tests
+					'skipped': mut_result.skipped_tests,
+					'time': mut_result.time
 				}
 				mut_result_dicts.append(mut_result_dict)
 			mut_info_dict['mutationTestsResults'] = mut_result_dicts

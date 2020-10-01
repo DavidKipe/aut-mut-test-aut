@@ -101,6 +101,14 @@ def run_testsuite(mut_info, start_time_str, testsuite_rootdir, testsuite_command
 	mut_result.passed_tests = mut_result.total_tests - (mut_result.failed_tests + mut_result.error_tests + mut_result.skipped_tests)
 	mut_result.success = mut_result.total_tests == mut_result.passed_tests
 
+	total_time_sec = re.search(r"Total time:\s+(\d+(?:.\d+)?)\s+s$", completed_process.stdout, re.MULTILINE)
+	if total_time_sec:
+		mut_result.time = float(total_time_sec.group(1))
+	else:
+		total_time_min = re.search(r"time:\s+(\d+):(\d+)\s+min$", completed_process.stdout, re.MULTILINE)
+		if total_time_min:
+			mut_result.time = (int(total_time_min.group(1)) * 60) + int(total_time_min.group(2))  # convert in seconds
+
 	mut_info.add_result(mut_result)
 	if result:
 		print("Total tests: ", result.group(1), "success: ", result.group(1), "failed: ", result.group(2), "error: ", result.group(3), "skipped: ", result.group(4))
