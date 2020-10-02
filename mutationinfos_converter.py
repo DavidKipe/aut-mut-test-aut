@@ -23,7 +23,9 @@ map_pit_descr = {
 
 
 def negate_cond(s):
-	return re.sub(r'(\s*)if\s*\((.*)\)', r'\1if (!(\2))', s)
+	s = re.sub(r'(\s*)if\s*\((.*)\)', r'\1if (!(\2))', s)  # negation for 'if' statement
+	s = re.sub(r'(\s*)return\s*(.*);', r'\1return !(\2);', s)  # negation for 'return' statement
+	return s
 
 
 map_mutated_lines = {

@@ -58,9 +58,9 @@ def mutant_output_dir(mutant_id, start_time_str):
 	return out_dir
 
 
-def save_app_output(mutant_id, start_time_str, output_text):
+def save_app_output(mutant_id, start_time_str, testsuite_tag, output_text):
 	out_dir = mutant_output_dir(mutant_id, start_time_str)
-	out_file = os.path.join(out_dir, "mutated_app_output.txt")
+	out_file = os.path.join(out_dir, "app_output_for_{}.txt".format(testsuite_tag))
 
 	with open(out_file, 'w') as f:
 		f.write(output_text)
@@ -116,16 +116,23 @@ def run_testsuite(mut_info, start_time_str, testsuite_rootdir, testsuite_command
 
 	print("Test suite '{}' for mutant {} completed".format(testsuite_name, mutant_id))
 
-	return completed_process
-
 
 def run_testsuite_assertions(mutant_id, start_time_str):
-	return run_testsuite(mutant_id, start_time_str, testsuite_assertions_rootdir, run_testsuite_assertions_command, "Selenium assertions", "selenium")
+	testsuite_tag = "selenium"
+	testsuite_name = "Selenium assertions"
+	run_testsuite(mutant_id, start_time_str, testsuite_assertions_rootdir, run_testsuite_assertions_command, testsuite_name, testsuite_tag)
+	return testsuite_tag
 
 
 def run_testsuite_retest_expl(mutant_id, start_time_str):
-	return run_testsuite(mutant_id, start_time_str, testsuite_retest_expl_rootdir, run_testsuite_retest_expl_command, "ReTest Recheck explicit check", "retest_explicit")
+	testsuite_tag = "retest_explicit"
+	testsuite_name = "ReTest Recheck explicit check"
+	run_testsuite(mutant_id, start_time_str, testsuite_retest_expl_rootdir, run_testsuite_retest_expl_command, testsuite_name, testsuite_tag)
+	return testsuite_tag
 
 
 def run_testsuite_retest_impl(mutant_id, start_time_str):
-	return run_testsuite(mutant_id, start_time_str, testsuite_retest_impl_rootdir, run_testsuite_retest_impl_command, "ReTest Recheck implicit check", "retest_implicit")
+	testsuite_tag = "retest_implicit"
+	testsuite_name = "ReTest Recheck implicit check"
+	run_testsuite(mutant_id, start_time_str, testsuite_retest_impl_rootdir, run_testsuite_retest_impl_command, testsuite_name, testsuite_tag)
+	return testsuite_tag

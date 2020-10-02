@@ -15,7 +15,7 @@ async def main():
 	start_time_str = datetime.now().strftime("%Y%m%d-%H%M%S")
 
 	revert_proj_to_orig()
-	#convert_pit_xml_to_mut_infos_json()
+	convert_pit_xml_to_mut_infos_json()
 	mut_infos = read_mut_infos_from_file()
 
 	mutated_app_manager = MutatedAppManager()
@@ -33,10 +33,10 @@ async def main():
 			mutated_app_manager.wait_until_ready()  # wait until application is ready to use
 			# TODO save an alert (flag) for timeout elapsed, thus for the compilation error
 
-			testsuite_func(mut_info, start_time_str)  # run the test suite and save the result
+			testsuite_tag = testsuite_func(mut_info, start_time_str)  # run the test suite and save the result
 
 			output = mutated_app_manager.stop()  # close application
-			save_app_output(mut_info.id, start_time_str, output)
+			save_app_output(mut_info.id, start_time_str, testsuite_tag, output)
 
 		#print(json.dumps(mut_info.to_dict(), ensure_ascii=False, indent=4))
 		save_mut_info(mut_info, start_time_str)
