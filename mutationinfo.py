@@ -6,16 +6,22 @@ from typing import List
 
 
 class MutatorType(Enum):
-	UNKNOWN = 0
-	NEGATE_COND = 1001  # 1000+ is for mutator that needs function to be elaborated (dynamic mutated line)
-	REMOVE_CALL = 1
-	RTN_EMPTY_STR = 2
-	RTN_NULL = 3
-	RTN_EMPTY_COLLECTION = 4
-	RTN_FALSE = 5
-	RTN_TRUE = 6
-	RTN_ZERO_INT = 7
-	RTN_ZERO_INTEGER = 8
+	CONST_FUNC_ELAB = 512  # '+ 512' is for mutator that needs function to be elaborated (dynamic mutated line)
+	CONST_POST_SOURCE_ELAB = 1024  # '+ 1024' is for mutator that needs post elaborations of the source code after being applied
+
+	UNKNOWN = 255
+
+	NEGATE_COND = 1 + CONST_FUNC_ELAB
+
+	RTN_EMPTY_COLLECTION = 2 + CONST_POST_SOURCE_ELAB
+
+	REMOVE_CALL = 3
+	RTN_EMPTY_STR = 4
+	RTN_NULL = 5
+	RTN_FALSE = 6
+	RTN_TRUE = 7
+	RTN_ZERO_INT = 8
+	RTN_ZERO_INTEGER = 9
 
 
 @dataclass
