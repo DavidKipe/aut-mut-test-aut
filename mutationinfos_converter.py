@@ -7,6 +7,7 @@ import xml.etree.ElementTree as ET
 import json
 from linecache import getline
 import re
+import os
 
 
 _map_pit_description = {
@@ -22,10 +23,27 @@ _map_pit_description = {
 }
 
 
-def _negate_cond(s):
-	s = re.sub(r'(\s*)if\s*\((.*)\)', r'\1if (!(\2))', s)  # negation for 'if' statement
-	s = re.sub(r'(\s*)return\s*(.*);', r'\1return !(\2);', s)  # negation for 'return' statement
-	return s
+def _negate_cond(mut_info):
+	mutated_line = mut_info.original_line
+	mutated_line = re.sub(r'(\s*)if\s*\((.*)\)', r'\1if (!(\2))', mutated_line)  # negation for 'if' statement
+	mutated_line = re.sub(r'(\s*)return\s*(.*);', r'\1return !(\2);', mutated_line)  # negation for 'return' statement
+	return mutated_line
+
+
+def _empty_collection(mutation_info):
+	mut_line_template = 'return Collections.empty{}();'
+
+	# searching for function signature to get the return type of the collection
+	collection_type = "List"  # default is List
+	with open(_get_source_file_path(mutation_info), 'r') as source_file:
+		content_lines = source_file.readlines()
+		for line in reversed(content_lines[:mutation_info.line_number]):  # reverse order line iteration
+			result = re.search(r"^(?:\s*(?:public|private|protected)\s+|\s*)(Enumeration|Iterator|List|ListIterator|Map|Set)<\w+>\s+[a-zA-Z_$][a-zA-Z_$0-9]*\s*\(", line)
+			if result:
+				collection_type = result.group(1)
+				break
+
+	return mut_line_template.format(collection_type)
 
 
 _map_mutated_lines = {
@@ -33,12 +51,16 @@ _map_mutated_lines = {
 	MutatorType.REMOVE_CALL:			'',
 	MutatorType.RTN_EMPTY_STR:			'return "";',
 	MutatorType.RTN_NULL:				'return null;',
-	MutatorType.RTN_EMPTY_COLLECTION:	'return Collections.emptyList();',  # TODO currently support only List
+	MutatorType.RTN_EMPTY_COLLECTION:	_empty_collection,
 	MutatorType.RTN_FALSE:				'return false;',
 	MutatorType.RTN_TRUE:				'return true;',
 	MutatorType.RTN_ZERO_INT:			'return 0;',
 	MutatorType.RTN_ZERO_INTEGER:		'return 0;'
 }
+
+
+def _get_source_file_path(mutation_info):
+	return os.path.join(source_rootdir, mutation_info.rel_folder_path, mutation_info.source_filename)
 
 
 def _from_classpath_to_filepath(classpath):
@@ -48,8 +70,7 @@ def _from_classpath_to_filepath(classpath):
 
 
 def _get_orig_line(mutation_info):
-	path = source_rootdir + mutation_info.rel_folder_path + mutation_info.source_filename
-	return getline(path, mutation_info.line_number)
+	return getline(_get_source_file_path(mutation_info), mutation_info.line_number)
 
 
 def _get_mutator_type(pit_mutator_description):
@@ -66,13 +87,14 @@ def _get_mutator_type(pit_mutator_description):
 	return mutator_type
 
 
-def _create_mutated_line(mutator_type, orig_line):
+def _create_mutated_line(mut_info):
+	mutator_type = mut_info.mutator_type
 	if mutator_type == MutatorType.UNKNOWN:
 		return #TODO
 
 	if (mutator_type.value & MutatorType.CONST_FUNC_ELAB.value) > 0:  # TODO create func for this bitwise op
 		mutator_func = _map_mutated_lines[mutator_type]
-		mutated_line = mutator_func(orig_line)
+		mutated_line = mutator_func(mut_info)
 	else:
 		mutated_line = _map_mutated_lines[mutator_type]
 
@@ -100,8 +122,8 @@ def convert_pit_xml_to_mut_infos_json():
 		mutation_info.rel_folder_path =	_from_classpath_to_filepath(mutation.find('mutatedClass').text)
 		mutation_info.line_number =		int(mutation.find('lineNumber').text)
 		mutation_info.original_line =	_get_orig_line(mutation_info).strip()
-		mutation_info.mutated_line =	_create_mutated_line(mutator_type, mutation_info.original_line)
 		mutation_info.mutator_type =	mutator_type
+		mutation_info.mutated_line =	_create_mutated_line(mutation_info)  # lastly create the modified line
 
 		mutations_dict['mutations'].append(mutation_info.to_dict())
 

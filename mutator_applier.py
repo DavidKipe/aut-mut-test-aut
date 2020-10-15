@@ -9,11 +9,8 @@ import os
 def _pe_rtn_empty_collection(file_to_change):
 	with open(file_to_change, 'r') as mutating_file:
 		content_lines = mutating_file.readlines()
-		# for line in reversed(content_lines): # reverse order line iteration
-		# 	print(line.rstrip())
 
 	import_match = re.search(r"(^\s*import\s+java.util.Collections;)|(^\s*import\s+static\s+java.util.Collections.emptyList;)", "".join(content_lines), re.MULTILINE)
-	print(import_match)
 
 	if import_match:
 		return
