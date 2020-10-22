@@ -24,6 +24,25 @@ class MutatorType(Enum):
 	RTN_ZERO_INTEGER = 9
 
 
+class TestStatus(Enum):
+	SKIPPED = -1
+	PASSED = 0
+	FAILURE = 1
+	ERROR = 2
+
+
+@dataclass
+class TestResult:
+	name: str
+	status: TestStatus
+
+	def to_dict(self):
+		return {
+			'name': self.name,
+			'status': self.status.name
+		}
+
+
 @dataclass
 class MutationTestsResult:
 	test_suite_tag: str
@@ -34,7 +53,32 @@ class MutationTestsResult:
 	failed_tests: int = 0
 	error_tests: int = 0
 	skipped_tests: int = 0
-	time: float = 0.0
+	time_sec: float = 0.0
+	detailed_test_results: List[TestResult] = field(default_factory=list)  # optional
+
+	def add_test_result(self, test_result):
+		self.detailed_test_results.append(test_result)
+
+	def to_dict(self):
+		mut_test_result_dict = {
+			'testSuiteTag': self.test_suite_tag,
+			'testSuiteName': self.test_suite_name,
+			'success': self.success,
+			'totalTests': self.total_tests,
+			'passed': self.passed_tests,
+			'failed': self.failed_tests,
+			'error': self.error_tests,
+			'skipped': self.skipped_tests,
+			'time_sec': self.time_sec
+		}
+
+		if self.detailed_test_results:
+			det_test_results_dict = list()
+			for det_test_result in self.detailed_test_results:
+				det_test_results_dict.append(det_test_result.to_dict())
+			mut_test_result_dict['detailedTestResults'] = det_test_results_dict
+
+		return mut_test_result_dict
 
 
 @dataclass
@@ -45,7 +89,7 @@ class MutationInfo:
 	line_number: int = 0
 	original_line: str = ''
 	mutated_line: str = ''
-	mutator_type: MutatorType = None
+	mutator_type: MutatorType = MutatorType.UNKNOWN
 	mutation_results: List[MutationTestsResult] = field(default_factory=list)  # optional
 
 	def add_result(self, mut_result):
@@ -59,24 +103,24 @@ class MutationInfo:
 			'lineNumber': self.line_number,
 			'originalLine': self.original_line,
 			'mutatedLine': self.mutated_line,
-			'mutatorTag': self.mutator_type.name  # TODO check if exists, otherwise set UNKNOWN
+			'mutatorTag': self.mutator_type.name
 		}
 
 		if self.mutation_results:  # if results exist then copy them into dict
 			mut_result_dicts = list()
 			for mut_result in self.mutation_results:
-				mut_result_dict = {
-					'testSuiteTag': mut_result.test_suite_tag,
-					'testSuiteName': mut_result.test_suite_name,
-					'success': mut_result.success,
-					'totalTests': mut_result.total_tests,
-					'passed': mut_result.passed_tests,
-					'failed': mut_result.failed_tests,
-					'error': mut_result.error_tests,
-					'skipped': mut_result.skipped_tests,
-					'time': mut_result.time
-				}
-				mut_result_dicts.append(mut_result_dict)
+				# mut_result_dict = {
+				# 	'testSuiteTag': mut_result.test_suite_tag,
+				# 	'testSuiteName': mut_result.test_suite_name,
+				# 	'success': mut_result.success,
+				# 	'totalTests': mut_result.total_tests,
+				# 	'passed': mut_result.passed_tests,
+				# 	'failed': mut_result.failed_tests,
+				# 	'error': mut_result.error_tests,
+				# 	'skipped': mut_result.skipped_tests,
+				# 	'time_sec': mut_result.time_sec
+				# }
+				mut_result_dicts.append(mut_result.to_dict())
 			mut_info_dict['mutationTestsResults'] = mut_result_dicts
 
 		return mut_info_dict
@@ -84,11 +128,11 @@ class MutationInfo:
 
 def from_dict_to_mut_info(mut_info_dict):
 	mutation_info = MutationInfo()
-	mutation_info.id =					mut_info_dict['id']
-	mutation_info.source_filename =		mut_info_dict['sourceFilename']
-	mutation_info.rel_folder_path =		mut_info_dict['relFolderPath']
-	mutation_info.line_number =			mut_info_dict['lineNumber']
-	mutation_info.original_line =		mut_info_dict['originalLine']
-	mutation_info.mutated_line =		mut_info_dict['mutatedLine']
-	mutation_info.mutator_type =		MutatorType[mut_info_dict['mutatorTag']]
+	mutation_info.id =				mut_info_dict['id']
+	mutation_info.source_filename =	mut_info_dict['sourceFilename']
+	mutation_info.rel_folder_path =	mut_info_dict['relFolderPath']
+	mutation_info.line_number =		mut_info_dict['lineNumber']
+	mutation_info.original_line =	mut_info_dict['originalLine']
+	mutation_info.mutated_line =	mut_info_dict['mutatedLine']
+	mutation_info.mutator_type =	MutatorType[mut_info_dict['mutatorTag']]
 	return mutation_info

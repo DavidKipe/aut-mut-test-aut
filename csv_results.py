@@ -57,7 +57,7 @@ class CSVTotalResultManager:
 				mr.failed_tests,
 				mr.error_tests,
 				mr.skipped_tests,
-				mr.time
+				mr.time_sec
 			]
 
 		with open(self._out_file, 'a', newline='') as csv_file:

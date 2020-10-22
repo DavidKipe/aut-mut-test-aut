@@ -16,6 +16,7 @@ indentation_format = '\t'				# could be either '\t' (tab) or ' ' (*one* space)
 
 # derived
 source_rootdir = app_rootdir + 'src/main/java/' # root directory of the source code
+target_dir = app_rootdir + 'target/'            # target directory of the project
 mutants_dir = app_rootdir + 'mutants/'          # directory of the mutant files inside the root app dir
 #
 

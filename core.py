@@ -42,6 +42,8 @@ async def main():
 		save_mut_info(mut_info, start_time_str)
 		csv_results_manage.append_result(mut_info)
 
+	revert_proj_to_orig()
+
 
 if __name__ == '__main__':
 	asyncio.run(main())

@@ -103,11 +103,11 @@ def run_testsuite(mut_info, start_time_str, testsuite_rootdir, testsuite_command
 
 	total_time_sec = re.search(r"Total time:\s+(\d+(?:.\d+)?)\s+s$", completed_process.stdout, re.MULTILINE)
 	if total_time_sec:
-		mut_result.time = float(total_time_sec.group(1))
+		mut_result.time_sec = float(total_time_sec.group(1))
 	else:
 		total_time_min = re.search(r"time:\s+(\d+):(\d+)\s+min$", completed_process.stdout, re.MULTILINE)
 		if total_time_min:
-			mut_result.time = (int(total_time_min.group(1)) * 60) + int(total_time_min.group(2))  # convert in seconds
+			mut_result.time_sec = (int(total_time_min.group(1)) * 60) + int(total_time_min.group(2))  # convert in seconds
 
 	mut_info.add_result(mut_result)
 	if result:

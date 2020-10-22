@@ -28,7 +28,7 @@ def _pe_rtn_empty_collection(file_to_change):
 		mutating_file.write(contents)
 
 
-_map_post_source_elaboration = {
+_map_post_source_elaboration_func = {
 	MutatorType.RTN_EMPTY_COLLECTION: _pe_rtn_empty_collection
 }
 
@@ -38,7 +38,7 @@ def _post_source_elaboration(file_to_change, mut_type):
 		return
 
 	# there is a post elaboration to do in the source code
-	_map_post_source_elaboration[mut_type](file_to_change)
+	_map_post_source_elaboration_func[mut_type](file_to_change)
 
 
 def apply_mutator(file_to_change, mut_info):
@@ -49,17 +49,23 @@ def apply_mutator(file_to_change, mut_info):
 	with open(filename_bak, 'r') as orig_file:  # open the orig file in read mode
 		with open(file_to_change, 'w') as mutating_file:  # open the mutated file in write mode
 			cur_line_number = 1  # line counter
+			check_instr_end = False  # needed to try to get rid of the entire original instruction and not only the line
 			for line in orig_file:
-				if cur_line_number == mut_info.line_number: # if this is the line to mutate
-					leading_spaces = len(line) - len(line.lstrip()) # calculate the identation of this line
-					indentation = leading_spaces * indentation_format #
+				if cur_line_number == mut_info.line_number:  # if this is the line to mutate
+					leading_spaces = len(line) - len(line.lstrip())  # calculate the indentation of this line
+					indentation = leading_spaces * indentation_format
 					mutating_file.write(indentation + '//' + line.strip() + orig_line_tag + '\n')  # write the orig line commented
 					mutating_file.write(indentation + mut_info.mutated_line + mutate_line_tag + '\n')  # write the mutated line
+					if not re.search(r";$", line):
+						check_instr_end = True  # flag to check the end of the original instruction
 				else:
-					mutating_file.write(line)  # otherwise copy the line
+					if check_instr_end:
+						if re.search(r";$", line):  # check if there is a semicolon at the end of the line
+							check_instr_end = False  # if so stop to check for the end of the instruction
+						continue  # if not continue without write this line
+					mutating_file.write(line)  # copy the line original line to the mutating file
 				cur_line_number += 1
 
-	print(mut_info.id)
 	_post_source_elaboration(file_to_change, mut_info.mutator_type)
 
 	save_mutant_and_mut_info(file_to_change, mut_info)

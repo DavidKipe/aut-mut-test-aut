@@ -69,7 +69,7 @@ def _from_classpath_to_filepath(classpath):
 	return path
 
 
-def _get_orig_line(mutation_info):
+def _get_orig_line(mutation_info):  # TODO try to get the entire instruction, not just the line
 	return getline(_get_source_file_path(mutation_info), mutation_info.line_number)
 
 
