@@ -21,20 +21,21 @@ async def main():
 
 	mutated_app_manager = MutatedAppManager()
 	list_of_testsuite_funcs_to_run = [run_testsuite_assertions, run_testsuite_retest_expl]
-	csv_results_manage = CSVTotalResultManager(start_time_str, len(list_of_testsuite_funcs_to_run))
+	list_of_testsuite_tags = ['selenium', 'retest_explicit']
+	csv_results_manage = CSVTotalResultManager(start_time_str, list_of_testsuite_tags)
 
 	for mut_info in mut_infos:
 		revert_proj_to_orig()  # revert code to original
 
 		mutate_code(mut_info)  # apply the new mutator
 
-		for testsuite_func in list_of_testsuite_funcs_to_run:
+		for i in range(0, len(list_of_testsuite_tags)):
 			mutated_app_manager.run_async()  # run the application mutated
 
 			mutated_app_manager.wait_until_ready()  # wait until application is ready to use
 			# TODO save an alert (flag) for timeout elapsed, thus for the compilation error
 
-			testsuite_tag = testsuite_func(mut_info, start_time_str)  # run the test suite and save the result
+			testsuite_tag = list_of_testsuite_funcs_to_run[i](mut_info, start_time_str)  # run the test suite and save the result
 
 			output = mutated_app_manager.stop()  # close application
 			save_app_output(mut_info.id, start_time_str, testsuite_tag, output)

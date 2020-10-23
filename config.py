@@ -24,9 +24,10 @@ mutants_dir = join(app_rootdir, 'mutants')  # directory of the mutant files insi
 run_app_command = 'mvn spring-javaformat:apply spring-boot:run -B'
 app_ready_stdout_signal = "Started PetClinicApplication in"
 
-# must be only Maven commands
-run_testsuite_assertions_command = 'mvn -Dtest="assertions.**" -Djava.awt.headless=true test -B'
-run_testsuite_retest_expl_command = 'mvn -Dtest="recheck.explicit.**" -Djava.awt.headless=true test -B'
-run_testsuite_retest_impl_command = 'mvn -Dtest="recheck.implicit.**" -Djava.awt.headless=true test -B'
+# options for Maven for each test suite
+# command: 'mvn {your-options-here} surefire-report:report test -B'
+mvn_testsuite_assertions_opts = '-Dtest="assertions.**" -Djava.awt.headless=true'
+mvn_testsuite_retest_expl_opts = '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
+mvn_testsuite_retest_impl_opts = '-Dtest="recheck.implicit.**" -Djava.awt.headless=true'
 
 ##  ##

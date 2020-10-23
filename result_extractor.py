@@ -40,7 +40,7 @@ def extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, test
 	return mut_result
 
 
-# reports should be removed after extraction because must not be re-read in next extraction, since different test suites do not overwrite report files each other
+# reports should be removed after extraction because must not be re-read in next extraction or in next surefire-report HTML, since different test suites do not overwrite report files each other
 def clear_surefire_reports(testsuite_rootdir):
 	for test_report in _get_surefire_reports_list(testsuite_rootdir):
 		os.remove(test_report)

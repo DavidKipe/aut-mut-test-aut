@@ -6,10 +6,10 @@ from utils import output_dir
 
 class CSVTotalResultManager:
 
-	def __init__(self, start_time_str, number_of_test_suites):
+	def __init__(self, start_time_str, test_suite_tags):
 		out_dir = output_dir(start_time_str)
 		self._out_file = os.path.join(out_dir, 'results.csv')
-		self._init_and_write_header(number_of_test_suites)
+		self._init_and_write_header(len(test_suite_tags))
 
 	def _init_and_write_header(self, number_of_test_suites):  # create (overwrite if exists) the 'results.csv' file and write the columns header
 		header_row = [  # for the MutationInfo
