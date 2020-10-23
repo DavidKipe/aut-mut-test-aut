@@ -1,5 +1,4 @@
 import json
-import subprocess
 from shutil import copyfile
 
 from result_extractor import *
@@ -86,49 +85,3 @@ def save_mut_info(mut_info, start_time_str):
 
 	with open(out_file, 'w') as mut_info_file:
 		json.dump(mut_info.to_dict(), mut_info_file, ensure_ascii=False, indent=4)
-
-
-def run_testsuite(mut_info, start_time_str, testsuite_rootdir, testsuite_mvn_opts, testsuite_name, testsuite_tag):
-	mutant_id = mut_info.id
-
-	print("Running test suite '{}' for mutant {} ...".format(testsuite_name, mutant_id))
-
-	clear_surefire_reports(testsuite_rootdir)
-
-	opt_report_title = '-Dsurefire.report.title="Surefire report. Test suite: {}, Mutant id: {}"'.format(testsuite_tag, mutant_id)
-	completed_process = subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'test', '-B']),
-			cwd=testsuite_rootdir,
-			shell=True,
-			encoding='utf-8',
-			stderr=subprocess.STDOUT,
-			stdout=subprocess.PIPE)
-
-	save_test_suite_output(mutant_id, start_time_str, testsuite_tag, completed_process.stdout)
-	copy_surefire_report(mutant_id, start_time_str, testsuite_rootdir, testsuite_tag)
-
-	mut_result = extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, testsuite_name)
-	mut_info.add_result(mut_result)
-	# TODO create print method for MutationTestsResult
-
-	print("Test suite '{}' for mutant {} completed".format(testsuite_name, mutant_id))
-
-
-def run_testsuite_assertions(mutant_id, start_time_str):
-	testsuite_tag = "selenium"
-	testsuite_name = "Selenium assertions"
-	run_testsuite(mutant_id, start_time_str, testsuite_assertions_rootdir, mvn_testsuite_assertions_opts, testsuite_name, testsuite_tag)
-	return testsuite_tag
-
-
-def run_testsuite_retest_expl(mutant_id, start_time_str):
-	testsuite_tag = "retest_explicit"
-	testsuite_name = "ReTest Recheck explicit check"
-	run_testsuite(mutant_id, start_time_str, testsuite_retest_expl_rootdir, mvn_testsuite_retest_expl_opts, testsuite_name, testsuite_tag)
-	return testsuite_tag
-
-
-def run_testsuite_retest_impl(mutant_id, start_time_str):
-	testsuite_tag = "retest_implicit"
-	testsuite_name = "ReTest Recheck implicit check"
-	run_testsuite(mutant_id, start_time_str, testsuite_retest_impl_rootdir, mvn_testsuite_retest_impl_opts, testsuite_name, testsuite_tag)
-	return testsuite_tag

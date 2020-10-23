@@ -61,7 +61,11 @@ class MutationTestsResult:
 	def add_test_result(self, test_result):
 		self.detailed_test_results.append(test_result)
 
+	def sort_detailed_test_result(self):
+		self.detailed_test_results.sort(key=lambda tr: tr.class_name + tr.name)
+
 	def to_dict(self):
+		self.sort_detailed_test_result()
 		mut_test_result_dict = {
 			'testSuiteTag': self.test_suite_tag,
 			'testSuiteName': self.test_suite_name,

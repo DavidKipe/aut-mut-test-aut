@@ -26,12 +26,12 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 
 	_stdout_text = ""
 
-	def _run_sync(self):
+	def run_sync(self):
 		if self.is_running():
 			print("Mutated application already running")
 		else:
 			print("Running mutated application...")
-			self._proc = subprocess.Popen([run_app_command], cwd=app_rootdir, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # run the application
+			self._proc = subprocess.Popen([run_app_command], cwd=app_root_dir, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # run the application
 
 			with self._proc.stdout as stdout:  # capture the output
 				for stdout_line in stdout:
@@ -42,7 +42,7 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 						self._rdy_event.set()  # set the application ready
 
 	def run_async(self):
-		self._event_loop.run_in_executor(None, self._run_sync)  # use a separated thread
+		self._event_loop.run_in_executor(None, self.run_sync)  # use a separated thread
 
 	def wait_until_ready(self):
 		return self._rdy_event.wait(60)
