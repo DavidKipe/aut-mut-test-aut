@@ -1,7 +1,7 @@
-from utils import output_dir
-
 import csv
 import os
+
+from utils import output_dir
 
 
 class CSVTotalResultManager:

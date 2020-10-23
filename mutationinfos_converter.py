@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
+import json
+import os
+import re
+import xml.etree.ElementTree as ET
+from linecache import getline
+
 from config import *
 from mutationinfo import *
-
-import xml.etree.ElementTree as ET
-import json
-from linecache import getline
-import re
-import os
-
 
 _map_pit_description = {
 	'negated conditional':									MutatorType.NEGATE_COND,

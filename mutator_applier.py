@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
+import re
 
 from utils import *
-
-from shutil import copyfile
-import os
 
 
 def _pe_rtn_empty_collection(file_to_change):

@@ -1,10 +1,10 @@
-from config import *
-
 import asyncio
 import os
 import subprocess
 from signal import SIGTERM
 from threading import Event
+
+from config import *
 
 
 class MutatedAppManagerSingleton(type):

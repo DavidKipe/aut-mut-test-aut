@@ -34,11 +34,13 @@ class TestStatus(Enum):
 @dataclass
 class TestResult:
 	name: str
+	class_name: str
 	status: TestStatus
 
 	def to_dict(self):
 		return {
 			'name': self.name,
+			'className': self.class_name,
 			'status': self.status.name
 		}
 

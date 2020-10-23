@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 
-from mutated_app_manager import MutatedAppManager
-from mutator_applier import *
-from mutationinfos_converter import convert_pit_xml_to_mut_infos_json
-from csv_results import CSVTotalResultManager
-
 import asyncio
 from datetime import datetime
+
+from csv_results import CSVTotalResultManager
+from mutated_app_manager import MutatedAppManager
+from mutationinfos_converter import convert_pit_xml_to_mut_infos_json
+from mutator_applier import *
+
 
 # TODO organize import
 # TODO manage exception to shutdown correctly

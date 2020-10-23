@@ -1,11 +1,8 @@
-from config import *
-from mutationinfo import *
-
 import json
 import subprocess
-import os
-import re
 from shutil import copyfile
+
+from result_extractor import *
 
 
 # TODO re-organize these methods in files
@@ -87,32 +84,15 @@ def run_testsuite(mut_info, start_time_str, testsuite_rootdir, testsuite_command
 
 	print("Running test suite '{}' for mutant {} ...".format(testsuite_name, mutant_id))
 
+	clear_surefire_reports(testsuite_rootdir)
+
 	completed_process = subprocess.run([testsuite_command], cwd=testsuite_rootdir, shell=True, encoding='utf-8', stderr=subprocess.STDOUT, stdout=subprocess.PIPE)
 
 	save_test_suite_output(mutant_id, start_time_str, testsuite_tag, completed_process.stdout)
 
-	# TODO create method for this
-	result = re.search(r"Tests run: (\d+), Failures: (\d+), Errors: (\d+), Skipped: (\d+)$", completed_process.stdout, re.MULTILINE)
-	mut_result = MutationTestsResult(test_suite_tag=testsuite_tag, test_suite_name=testsuite_name)
-	mut_result.total_tests = int(result.group(1))
-	mut_result.failed_tests = int(result.group(2))
-	mut_result.error_tests = int(result.group(3))
-	mut_result.skipped_tests = int(result.group(4))
-	mut_result.passed_tests = mut_result.total_tests - (mut_result.failed_tests + mut_result.error_tests + mut_result.skipped_tests)
-	mut_result.success = mut_result.total_tests == mut_result.passed_tests
-
-	total_time_sec = re.search(r"Total time:\s+(\d+(?:.\d+)?)\s+s$", completed_process.stdout, re.MULTILINE)
-	if total_time_sec:
-		mut_result.time_sec = float(total_time_sec.group(1))
-	else:
-		total_time_min = re.search(r"time:\s+(\d+):(\d+)\s+min$", completed_process.stdout, re.MULTILINE)
-		if total_time_min:
-			mut_result.time_sec = (int(total_time_min.group(1)) * 60) + int(total_time_min.group(2))  # convert in seconds
-
+	mut_result = extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, testsuite_name)
 	mut_info.add_result(mut_result)
-	if result:
-		print("Total tests: ", result.group(1), "success: ", result.group(1), "failed: ", result.group(2), "error: ", result.group(3), "skipped: ", result.group(4))
-		# TODO create print method for MutationTestsResult
+	# TODO create print method for MutationTestsResult
 
 	print("Test suite '{}' for mutant {} completed".format(testsuite_name, mutant_id))
 
