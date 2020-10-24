@@ -61,11 +61,11 @@ class MutationTestsResult:
 	def add_test_result(self, test_result):
 		self.detailed_test_results.append(test_result)
 
-	def sort_detailed_test_result(self):
+	def sort_detailed_test_results(self):
 		self.detailed_test_results.sort(key=lambda tr: tr.class_name + tr.name)
 
 	def to_dict(self):
-		self.sort_detailed_test_result()
+		self.sort_detailed_test_results()
 		mut_test_result_dict = {
 			'testSuiteTag': self.test_suite_tag,
 			'testSuiteName': self.test_suite_name,
@@ -101,6 +101,9 @@ class MutationInfo:
 	def add_result(self, mut_result):
 		self.mutation_results.append(mut_result)
 
+	def get_mutation_result_of(self, testsuite_tag):
+		return next((mut_result for mut_result in self.mutation_results if mut_result.test_suite_tag == testsuite_tag), None)
+
 	def to_dict(self):
 		mut_info_dict = {
 			'id': self.id,
@@ -115,17 +118,6 @@ class MutationInfo:
 		if self.mutation_results:  # if results exist then copy them into dict
 			mut_result_dicts = list()
 			for mut_result in self.mutation_results:
-				# mut_result_dict = {
-				# 	'testSuiteTag': mut_result.test_suite_tag,
-				# 	'testSuiteName': mut_result.test_suite_name,
-				# 	'success': mut_result.success,
-				# 	'totalTests': mut_result.total_tests,
-				# 	'passed': mut_result.passed_tests,
-				# 	'failed': mut_result.failed_tests,
-				# 	'error': mut_result.error_tests,
-				# 	'skipped': mut_result.skipped_tests,
-				# 	'time_sec': mut_result.time_sec
-				# }
 				mut_result_dicts.append(mut_result.to_dict())
 			mut_info_dict['mutationTestsResults'] = mut_result_dicts
 

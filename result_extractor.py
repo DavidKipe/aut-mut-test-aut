@@ -23,7 +23,7 @@ def extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, test
 		mut_result.failed_tests += int(testsuite_attrib.get('failures'))
 		mut_result.error_tests += int(testsuite_attrib.get('errors'))
 		mut_result.skipped_tests += int(testsuite_attrib.get('skipped'))
-		mut_result.time_sec = float(testsuite_attrib.get('time'))
+		mut_result.time_sec += float(testsuite_attrib.get('time'))
 
 		# derived info
 		mut_result.passed_tests = mut_result.total_tests - mut_result.failed_tests - mut_result.error_tests - mut_result.skipped_tests

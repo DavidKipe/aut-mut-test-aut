@@ -25,7 +25,7 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 		return self._map_testsuite_info.keys()
 
 	@staticmethod
-	def __run_test_suite(mutation_info, start_time_str, testsuite_rootdir, testsuite_mvn_opts, testsuite_name, testsuite_tag):
+	def __run_test_suite(mutation_info, execution_tag, testsuite_rootdir, testsuite_mvn_opts, testsuite_name, testsuite_tag):
 		mutant_id = mutation_info.id
 
 		print("[Mutant id: {}] Running test suite '{}' ...".format(mutant_id, testsuite_name))
@@ -40,8 +40,8 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 				stderr=subprocess.STDOUT,
 				stdout=subprocess.PIPE)
 
-		save_test_suite_output(mutant_id, start_time_str, testsuite_tag, completed_process.stdout)
-		copy_surefire_report(mutant_id, start_time_str, testsuite_rootdir, testsuite_tag)
+		save_test_suite_output(mutant_id, execution_tag, testsuite_tag, completed_process.stdout)
+		copy_surefire_report(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag)
 
 		mut_result = extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, testsuite_name)
 		mutation_info.add_result(mut_result)
@@ -49,7 +49,7 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 		print("[Mutant id: {}] Test suite '{}' has finished computation".format(mutant_id, testsuite_name))
 		# TODO print method for MutationTestsResult
 
-	def run_test_suite(self, testsuite_tag, mutation_info, start_time_str):
+	def run_test_suite(self, testsuite_tag, mutation_info, execution_tag):
 		test_suite = self._map_testsuite_info[testsuite_tag]
-		self.__run_test_suite(mutation_info, start_time_str, test_suite['root_dir'], test_suite['mvn_opts'], test_suite['name'], testsuite_tag)
+		self.__run_test_suite(mutation_info, execution_tag, test_suite['root_dir'], test_suite['mvn_opts'], test_suite['name'], testsuite_tag)
 

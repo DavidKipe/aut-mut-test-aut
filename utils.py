@@ -32,20 +32,20 @@ def save_mutant_and_mut_info(file_mutated, mut_info):
 		json.dump(mut_info.to_dict(), mut_info_file, ensure_ascii=False, indent=4)
 
 
-def output_dir(start_time_str):
+def output_dir(execution_tag):
 	out_dir = "output"
 	if not os.path.exists(out_dir):
 		os.mkdir(out_dir)
 
-	out_dir = os.path.join(out_dir, start_time_str)
+	out_dir = os.path.join(out_dir, execution_tag)
 	if not os.path.exists(out_dir):
 		os.mkdir(out_dir)
 
 	return out_dir
 
 
-def mutant_output_dir(mutant_id, start_time_str):
-	out_dir = output_dir(start_time_str)
+def mutant_output_dir(mutant_id, execution_tag):
+	out_dir = output_dir(execution_tag)
 
 	out_dir = os.path.join(out_dir, "mutant_{}".format(mutant_id))
 	if not os.path.exists(out_dir):
@@ -54,33 +54,33 @@ def mutant_output_dir(mutant_id, start_time_str):
 	return out_dir
 
 
-def save_app_output(mutant_id, start_time_str, testsuite_tag, output_text):
-	out_dir = mutant_output_dir(mutant_id, start_time_str)
+def save_app_output(mutant_id, execution_tag, testsuite_tag, output_text):
+	out_dir = mutant_output_dir(mutant_id, execution_tag)
 	out_file = os.path.join(out_dir, "app_output_for_{}.txt".format(testsuite_tag))
 
 	with open(out_file, 'w') as f:
 		f.write(output_text)
 
 
-def save_test_suite_output(mutant_id, start_time_str, testsuite_tag, output_text):
-	out_dir = mutant_output_dir(mutant_id, start_time_str)
+def save_test_suite_output(mutant_id, execution_tag, testsuite_tag, output_text):
+	out_dir = mutant_output_dir(mutant_id, execution_tag)
 	out_file = os.path.join(out_dir, "test_suite_{}_output.txt".format(testsuite_tag))
 
 	with open(out_file, 'w') as f:
 		f.write(output_text)
 
 
-def copy_surefire_report(mutant_id, start_time_str, testsuite_rootdir, testsuite_tag):
+def copy_surefire_report(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag):
 	orig_report = os.path.join(testsuite_rootdir, 'target/site', 'surefire-report.html')
 
-	out_dir = mutant_output_dir(mutant_id, start_time_str)
+	out_dir = mutant_output_dir(mutant_id, execution_tag)
 	out_report = os.path.join(out_dir, "test_suite_{}_report.html".format(testsuite_tag))
 
 	copyfile(orig_report, out_report)
 
 
-def save_mut_info(mut_info, start_time_str):
-	out_dir = mutant_output_dir(mut_info.id, start_time_str)
+def save_mut_info(mut_info, execution_tag):
+	out_dir = mutant_output_dir(mut_info.id, execution_tag)
 	out_file = os.path.join(out_dir, 'mutant_' + str(mut_info.id) + '.json')
 
 	with open(out_file, 'w') as mut_info_file:
