@@ -54,11 +54,11 @@ def apply_mutator(file_to_change, mut_info):
 					indentation = leading_spaces * indentation_format
 					mutating_file.write(indentation + '//' + line.strip() + orig_line_tag + '\n')  # write the orig line commented
 					mutating_file.write(indentation + mut_info.mutated_line + mutate_line_tag + '\n')  # write the mutated line
-					if not re.search(r";$", line):
+					if not mut_info.mutator_type == MutatorType.NEGATE_COND and re.search(r";\s*(//.*)?$", line):
 						check_instr_end = True  # flag to check the end of the original instruction
 				else:
 					if check_instr_end:
-						if re.search(r";$", line):  # check if there is a semicolon at the end of the line
+						if re.search(r";\s*(//.*)?$", line):  # check if there is a semicolon at the end of the line
 							check_instr_end = False  # if so stop to check for the end of the instruction
 						continue  # if not continue without write this line
 					mutating_file.write(line)  # copy the line original line to the mutating file

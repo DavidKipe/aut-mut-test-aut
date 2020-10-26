@@ -75,7 +75,7 @@ class MutationTestsResult:
 			'failed': self.failed_tests,
 			'error': self.error_tests,
 			'skipped': self.skipped_tests,
-			'time_sec': self.time_sec
+			'time_sec': round(self.time_sec, 3)
 		}
 
 		if self.detailed_test_results:

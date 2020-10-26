@@ -4,7 +4,7 @@ import os
 from utils import output_dir
 
 
-class CSVTotalResultManager:
+class CSVTotalResultWriter:
 
 	_map_out_file = dict()
 
@@ -85,7 +85,7 @@ class CSVTotalResultManager:
 				mut_result.failed_tests,
 				mut_result.error_tests,
 				mut_result.skipped_tests,
-				mut_result.time_sec
+				round(mut_result.time_sec, 3)
 			]
 
 		self.__write_csv_row('main', row_list)
