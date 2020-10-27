@@ -21,7 +21,7 @@ async def main():
 	test_suite_manager = TestSuiteManager()
 	csv_result_writer = CSVTotalResultWriter(execution_tag, test_suite_manager.get_test_suite_tags())
 
-	for mut_info in mutations_info[90:]:  # for each mutant
+	for mut_info in mutations_info:  # for each mutant
 
 		try:
 			mutate_code(mut_info)  # apply the new mutator
