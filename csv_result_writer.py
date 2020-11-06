@@ -6,18 +6,19 @@ from utils import output_dir
 
 class CSVTotalResultWriter:
 
+	_OVERALL_RESULT_TAG = 'main'
+
 	_map_out_file = dict()
 
 	def __init__(self, execution_tag, test_suite_tags):
 		out_dir = output_dir(execution_tag)
 
-		self._map_out_file['main'] = os.path.join(out_dir, 'results.csv')  # name of the overall results file
-		self.__init_main(len(test_suite_tags))  # init file with header
+		self._map_out_file[self._OVERALL_RESULT_TAG] = os.path.join(out_dir, 'results.csv')  # name of the overall results file
 
-		for testsuite_tag in test_suite_tags:  # save in the map all the names for each test suite
+		for testsuite_tag in test_suite_tags:  # save in a map all the pairs (testsuite_tag, file_name) for each test suite
 			self._map_out_file[testsuite_tag] = os.path.join(out_dir, 'detail_results_for_{}.csv'.format(testsuite_tag))
 
-	def __init_main(self, number_of_test_suites):  # create (overwrite if exists) the 'results.csv' file and write the columns header
+	def __init_overall(self):  # create (overwrite if exists) the 'results.csv' file and write the columns header
 		header_row = [  # for the MutationInfo
 			'Mutant ID',
 			'Source file relative path',
@@ -37,9 +38,9 @@ class CSVTotalResultWriter:
 			'Error tests',
 			'Skipped tests',
 			'Total execution time (sec)',
-		] * number_of_test_suites
+		] * len(self._map_out_file)
 
-		self.__write_csv_row('main', header_row, is_header=True)
+		self.__write_csv_row(self._OVERALL_RESULT_TAG, header_row, is_header=True)
 
 	def __init_detail_for(self, mut_result):
 		header_row = [  # for the MutationInfo (without test suite tag)
@@ -65,7 +66,10 @@ class CSVTotalResultWriter:
 
 		self.__write_csv_row(mut_result.test_suite_tag, header_row, is_header=True)
 
-	def append_main_result(self, mutation_info):  # create and append to 'results.csv' a new line with the results of the mutant passed
+	def append_overall_result(self, mutation_info):  # create and append to 'results.csv' a new line with the results of the mutant passed
+		if not os.path.exists(self._map_out_file[self._OVERALL_RESULT_TAG]):  # if file for the main result does not exist
+			self.__init_overall()  # then init it
+
 		row_list = [
 			mutation_info.id,
 			mutation_info.rel_folder_path,
@@ -88,13 +92,13 @@ class CSVTotalResultWriter:
 				round(mut_result.time_sec, 3)
 			]
 
-		self.__write_csv_row('main', row_list)
+		self.__write_csv_row(self._OVERALL_RESULT_TAG, row_list)
 
 	def append_detail_result_for(self, testsuite_tag, mutation_info):
 		mutation_result = mutation_info.get_mutation_result_of(testsuite_tag)
 
-		if not os.path.exists(self._map_out_file[testsuite_tag]):  # if the file for this test suite in not exists
-			self.__init_detail_for(mutation_result)  # then init it with using info about the result ( a priori it doesn't know how many and which test cases there are)
+		if not os.path.exists(self._map_out_file[testsuite_tag]):  # if file for this test suite does not exist
+			self.__init_detail_for(mutation_result)  # then init it with using info about the result (a priori it doesn't know how many and which test cases there are)
 
 		row_list = [  # base info
 			mutation_info.id,

@@ -2,8 +2,8 @@ from os.path import join
 
 ## configurations ##
 
-pit_xml_report_filename = 'resources/mutations.xml'
-mut_infos_json_filename = 'resources/mutations.json'
+pit_xml_report_filename = 'resources/mutations.xml'  # input file from PIT
+mut_infos_json_filename = 'resources/mutations.json'  # generated file by this tool
 
 app_root_dir = '/home/david/IdeaProjects/spring-petclinic-mutation'    # root directory of the application
 
@@ -21,6 +21,8 @@ mutants_dir = join(app_root_dir, 'mutants')  # directory of the mutant files ins
 
 run_app_command = 'mvn spring-javaformat:apply spring-boot:run -B'
 app_ready_stdout_signal = "Started PetClinicApplication in"
+
+skipped_mutants = [51, 104, 105]  # list of ids of the mutants to be skipped
 
 
 # Information about test suites #
