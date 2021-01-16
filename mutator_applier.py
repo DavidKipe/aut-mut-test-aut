@@ -71,16 +71,17 @@ def apply_mutator(file_to_change, mut_info):
 
 
 def revert_proj_to_orig():
-	for subdir, dirs, files in os.walk(source_rootdir):
-		for f in files:
-			if f.endswith('.java' + backup_ext):
-				abspath = os.path.join(subdir, f)
-				copyfile(abspath, abspath.replace(backup_ext, ''))
-				os.remove(abspath)
+	for source_rootdir in source_paths:
+		for subdir, dirs, files in os.walk(source_rootdir):
+			for f in files:
+				if f.endswith('.java' + backup_ext):
+					abspath = os.path.join(subdir, f)
+					copyfile(abspath, abspath.replace(backup_ext, ''))
+					os.remove(abspath)
 
 
 def mutate_code(mutator_info):
-	apply_mutator(os.path.join(source_rootdir, mutator_info.rel_folder_path, mutator_info.source_filename), mutator_info)
+	apply_mutator(get_source_file_path(mutator_info), mutator_info)
 
 
 id = 0

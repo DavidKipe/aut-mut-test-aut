@@ -62,6 +62,8 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 		else:
 			print("Mutated application not running")
 
+		#TODO Shopizer: post execution command (reset database)
+
 		stdout_text = self._stdout_text  # reset and return the registered output of the app
 		self._stdout_text = ""
 		return stdout_text

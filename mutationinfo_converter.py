@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
 import json
-import os
 import re
 import xml.etree.ElementTree as ET
 from linecache import getline
 
 from config import *
 from mutationinfo import *
+from utils import get_source_file_path
 
 _map_pit_description = {
 	'negated conditional':									MutatorType.NEGATE_COND,
@@ -59,7 +59,7 @@ _map_mutated_lines = {
 
 
 def _get_source_file_path(mutation_info):
-	return os.path.join(source_rootdir, mutation_info.rel_folder_path, mutation_info.source_filename)
+	return get_source_file_path(mutation_info)
 
 
 def _from_classpath_to_filepath(classpath):

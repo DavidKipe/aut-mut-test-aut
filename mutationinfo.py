@@ -91,6 +91,7 @@ class MutationTestsResult:
 class MutationInfo:
 	id: int = 0
 	source_filename: str = ''
+	source_root_path: str = ''
 	rel_folder_path: str = ''
 	line_number: int = 0
 	original_line: str = ''
@@ -108,6 +109,7 @@ class MutationInfo:
 		mut_info_dict = {
 			'id': self.id,
 			'sourceFilename': self.source_filename,
+			'sourceRootPath': self.source_root_path,
 			'relFolderPath': self.rel_folder_path,
 			'lineNumber': self.line_number,
 			'originalLine': self.original_line,

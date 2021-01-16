@@ -85,3 +85,16 @@ def save_mut_info(mut_info, execution_tag):
 
 	with open(out_file, 'w') as mut_info_file:
 		json.dump(mut_info.to_dict(), mut_info_file, ensure_ascii=False, indent=4)
+
+
+def get_source_file_path(mut_info):
+	if not mut_info.source_root_path:
+		for source_path in source_paths:
+			file_path = os.path.join(source_path, mut_info.rel_folder_path, mut_info.source_filename)
+			if os.path.isfile(file_path):
+				mut_info.source_root_path = source_path
+				return file_path
+
+		raise FileNotFoundError
+	else:
+		return os.path.join(mut_info.source_root_path, mut_info.rel_folder_path, mut_info.source_filename)
