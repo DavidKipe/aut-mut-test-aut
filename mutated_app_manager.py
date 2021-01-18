@@ -26,12 +26,14 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 
 	_stdout_text = ""
 
+	_run_path = join(app_root_dir, command_path_run) if command_path_run else app_root_dir
+
 	def run_sync(self):
 		if self.is_running():
 			print("Mutated application already running")
 		else:
 			print("Running mutated application...")
-			self._proc = subprocess.Popen([run_app_command], cwd=app_root_dir, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # run the application
+			self._proc = subprocess.Popen([command_app_run], cwd=self._run_path, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # run the application
 
 			with self._proc.stdout as stdout:  # capture the output
 				for stdout_line in stdout:
@@ -62,11 +64,17 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 		else:
 			print("Mutated application not running")
 
-		#TODO Shopizer: post execution command (reset database)
-
 		stdout_text = self._stdout_text  # reset and return the registered output of the app
 		self._stdout_text = ""
 		return stdout_text
+
+	@staticmethod
+	def reset_application_state():
+		if command_app_reset:
+			subprocess.Popen([command_app_reset], cwd=app_root_dir, shell=True)  # reset the application
+			print("Application reset")
+		else:
+			raise RuntimeError("No command to reset application is found: add the reset command in the configuration")
 
 	def get_output(self):
 		return self._stdout_text

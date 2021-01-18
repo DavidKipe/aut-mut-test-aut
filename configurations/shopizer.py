@@ -1,8 +1,7 @@
-from os.path import join
 
 config_name = "Shopizer"
 
-## configuration ##
+# -- configuration -- #
 
 # Application (SUT) config #
 app_root_dir = '/home/david/IdeaProjects/shopizer'    # root directory of the application
@@ -12,19 +11,22 @@ orig_line_tag = ' // original line'		# this string will be appened to the origin
 mutate_line_tag = ' // mutated line'    # this string will be appened to the mutated line
 indentation_format = '\t'				# could be either '\t' (tab) or ' ' (*one* space)
 
-source_paths = ['sm-core/src/main/java', 'sm-core-model/src/main/java', 'sm-core-modules/src/main/java', 'sm-shop/src/main/java', 'sm-shop-model/src/main/java']  # root directories of the source code
+source_paths = ['sm-core/src/main/java', 'sm-core-model/src/main/java', 'sm-core-modules/src/main/java', 'sm-shop/src/main/java', 'sm-shop-model/src/main/java']  # directories of the source code in the app root dir
 
-mutants_dir = 'mutants'             # directory name where the mutated files will be saved inside the root app dir
+mutants_dir = 'mutants'             # directory name where the mutated files will be saved inside the app root dir
 
-run_app_command = 'mvn spring-boot:run -B'  # command to run application
-app_ready_stdout_signal = "Started PetClinicApplication in"         # what the application write on stdout when is ready
+command_path_run = 'sm-shop'    # path relative for the run command
+command_app_run = 'mvn spring-boot:run -B'  # command to run application
+app_ready_stdout_signal = "Started ShopApplication in"         # what the application write on stdout when is ready
+
+command_app_reset = 'git checkout -- sm-shop/SALESMANAGER.h2.db sm-shop/files/store/DownlaodRepository.dat'     # this command will be run to reset the app to the initial state
 #  #
 
-# Mutation info #
+# Mutation info # (path relative to root of this tool)
 pit_xml_report_filename = 'resources/mutations.xml'     # input file from PIT
 mut_infos_json_filename = 'resources/mutations.json'    # generated file by this tool
 
-skipped_mutants = [51, 55, 88, 104, 105]    # list of ids of the mutants to be skipped
+skipped_mutants = []    # list of ids of the mutants to be skipped
 #  #
 
 # Information about test suites #
@@ -56,10 +58,4 @@ test_suites = [
 ]
 
 surefire_reports_subdir = 'target/surefire-reports'     # relative location of surefire reports
-#  #
-
-
-# DO NOT CHANGE THESE LINES #
-source_paths = [join(app_root_dir, src_path) for src_path in source_paths]
-mutants_dir = join(app_root_dir, mutants_dir)
 #  #

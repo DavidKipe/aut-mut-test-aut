@@ -71,8 +71,8 @@ def apply_mutator(file_to_change, mut_info):
 
 
 def revert_proj_to_orig():
-	for source_rootdir in source_paths:
-		for subdir, dirs, files in os.walk(source_rootdir):
+	for source_path in source_paths:
+		for subdir, dirs, files in os.walk(source_path):
 			for f in files:
 				if f.endswith('.java' + backup_ext):
 					abspath = os.path.join(subdir, f)
