@@ -36,13 +36,19 @@ class TestResult:
 	name: str
 	class_name: str
 	status: TestStatus
+	exec_order: int = -1
 
 	def to_dict(self):
-		return {
+		test_result_dict = {
 			'name': self.name,
 			'className': self.class_name,
 			'status': self.status.name
 		}
+
+		if self.exec_order >= 0:
+			test_result_dict['execOrder'] = self.exec_order
+
+		return test_result_dict
 
 
 @dataclass
@@ -62,7 +68,7 @@ class MutationTestsResult:
 		self.detailed_test_results.append(test_result)
 
 	def sort_detailed_test_results(self):
-		self.detailed_test_results.sort(key=lambda tr: tr.class_name + tr.name)
+		self.detailed_test_results.sort(key=lambda tr: (tr.class_name, tr.exec_order))
 
 	def to_dict(self):
 		self.sort_detailed_test_results()

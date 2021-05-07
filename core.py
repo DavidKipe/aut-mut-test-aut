@@ -9,6 +9,8 @@ from mutationinfo_converter import convert_pit_xml_to_mut_infos_json
 from mutator_applier import *
 from testsuite_manager import TestSuiteManager
 
+# TODO change prints to logging
+
 
 async def main():
 	execution_tag = datetime.now().strftime("%Y%m%d-%H%M%S")  # tag of this execution (it is the name of the output directory)
@@ -38,6 +40,7 @@ async def main():
 				test_suite_manager.run_test_suite(testsuite_tag, mut_info, execution_tag)  # run the test suite and save the result
 
 				output = mutated_app_manager.stop()  # close mutated application
+				mutated_app_manager.reset_application_state()
 				save_app_output(mut_info.id, execution_tag, testsuite_tag, output)  # save output
 				csv_result_writer.append_detail_result_for(testsuite_tag, mut_info)  # save in the CSV file a line with a detailed result about test cases
 

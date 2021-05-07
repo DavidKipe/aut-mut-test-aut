@@ -29,13 +29,15 @@ def extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, test
 		mut_result.passed_tests = mut_result.total_tests - mut_result.failed_tests - mut_result.error_tests - mut_result.skipped_tests
 		mut_result.success = mut_result.total_tests == mut_result.passed_tests
 
+		exec_count_order = 0  # counter used to save the execution order, that is equal to the order in the XML report
 		for testcase in root.iter('testcase'):  # get detailed info for each testcase
 			status = TestStatus.PASSED
 			if testcase.find('failure') is not None:
 				status = TestStatus.FAILURE
 			elif testcase.find('error') is not None:
 				status = TestStatus.ERROR
-			mut_result.add_test_result(TestResult(testcase.attrib.get('name'), testcase.attrib.get('classname'), status))
+			mut_result.add_test_result(TestResult(testcase.attrib.get('name'), testcase.attrib.get('classname'), status, exec_count_order))
+			exec_count_order += 1
 
 	return mut_result
 

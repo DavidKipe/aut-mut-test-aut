@@ -33,7 +33,7 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 		clear_surefire_reports(testsuite_rootdir)
 
 		opt_report_title = '-Dsurefire.report.title="Surefire report. Test suite: {}, Mutant id: {}"'.format(testsuite_tag, mutant_id)
-		completed_process = subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'test', '-B']),
+		completed_process = subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'surefire:test', '-B']),
 				cwd=testsuite_rootdir,
 				shell=True,
 				encoding='utf-8',

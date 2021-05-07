@@ -73,8 +73,8 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 		if command_app_reset:
 			subprocess.Popen([command_app_reset], cwd=app_root_dir, shell=True)  # reset the application
 			print("Application reset")
-		else:
-			raise RuntimeError("No command to reset application is found: add the reset command in the configuration")
+		# else:
+		# 	raise RuntimeError("No command to reset application is found: add the reset command in the configuration")
 
 	def get_output(self):
 		return self._stdout_text

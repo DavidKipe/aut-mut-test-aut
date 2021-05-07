@@ -19,12 +19,12 @@ command_path_run = 'sm-shop'    # path relative for the run command
 command_app_run = 'mvn spring-boot:run -B'  # command to run application
 app_ready_stdout_signal = "Started ShopApplication in"         # what the application write on stdout when is ready
 
-command_app_reset = 'git checkout -- sm-shop/SALESMANAGER.h2.db sm-shop/files/store/DownlaodRepository.dat'     # this command will be run to reset the app to the initial state
+command_app_reset = 'git checkout -- sm-shop/SALESMANAGER.h2.db sm-shop/files/store/DownlaodRepository.dat'     # this command will be run to reset the app to the initial state (optional)
 #  #
 
 # Mutation info # (path relative to root of this tool)
-pit_xml_report_filename = 'resources/mutations.xml'     # input file from PIT
-mut_infos_json_filename = 'resources/mutations.json'    # generated file by this tool
+pit_xml_report_filename = 'resources/mutations_shopizer.xml'     # input file from PIT
+mut_infos_json_filename = 'resources/mutations_shopizer.json'    # generated file by this tool
 
 skipped_mutants = []    # list of ids of the mutants to be skipped
 #  #
@@ -40,21 +40,21 @@ test_suites = [
 	{
 		'name': 'Selenium assertions',
 		'tag': 'assertions',
-		'root_dir': '/home/david/IdeaProjects/petclinic-test-suite',
+		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
 		'mvn_opts': '-Dtest="assertions.**" -Djava.awt.headless=true'
 	},
 	{
 		'name': 'ReTest Recheck explicit check',
 		'tag': 'retest_explicit',
-		'root_dir': '/home/david/IdeaProjects/petclinic-test-suite',
+		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
 		'mvn_opts': '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
 	},
-	{
-		'name': 'ReTest Recheck implicit check',
-		'tag': 'retest_implicit',
-		'root_dir': '/home/david/IdeaProjects/petclinic-test-suite',
-		'mvn_opts': '-Dtest="recheck.implicit.**" -Djava.awt.headless=true'
-	}
+	# {
+	# 	'name': 'ReTest Recheck implicit check',
+	# 	'tag': 'retest_implicit',
+	# 	'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
+	# 	'mvn_opts': '-Dtest="recheck.implicit.**" -Djava.awt.headless=true'
+	# }
 ]
 
 surefire_reports_subdir = 'target/surefire-reports'     # relative location of surefire reports
