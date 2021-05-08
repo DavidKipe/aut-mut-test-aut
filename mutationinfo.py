@@ -6,22 +6,42 @@ from typing import List
 
 
 class MutatorType(Enum):
-	CONST_FUNC_ELAB = 512  # '+ 512' is for mutator that needs function to be elaborated (dynamic mutated line)
-	CONST_POST_SOURCE_ELAB = 1024  # '+ 1024' is for mutator that needs post elaborations of the source code after being applied
+	# these values are reserved and used for logic operations
+	_CONST_FUNC_ELAB = 512  # '+ 512' is for mutator that needs function to be elaborated (dynamic mutated line)
+	_CONST_POST_SOURCE_ELAB = 1024  # '+ 1024' is for mutator that needs post elaborations of the source code after being applied
 
 	UNKNOWN = 255
 
-	NEGATE_COND = 1 + CONST_FUNC_ELAB
+	# NegateConditionalsMutator
+	NEGATE_COND = 1 + _CONST_FUNC_ELAB
 
-	RTN_EMPTY_COLLECTION = 2 + CONST_FUNC_ELAB + CONST_POST_SOURCE_ELAB
+	# EmptyObjectReturnValsMutator
+	RTN_EMPTY_COLLECTION = 2 + _CONST_FUNC_ELAB + _CONST_POST_SOURCE_ELAB
+	RTN_EMPTY_STR = 3
+	RTN_ZERO_INTEGER_OBJ = 4
+	RTN_ZERO_LONG_OBJ = 5
+	RTN_ZERO_DOUBLE_OBJ = 6
 
-	REMOVE_CALL = 3
-	RTN_EMPTY_STR = 4
-	RTN_NULL = 5
-	RTN_FALSE = 6
-	RTN_TRUE = 7
-	RTN_ZERO_INT = 8
-	RTN_ZERO_INTEGER = 9
+	# VoidMethodCallMutator
+	REMOVE_CALL = 7
+
+	# NullReturnValsMutator
+	RTN_NULL = 8
+
+	# BooleanFalseReturnValsMutator, BooleanTrueReturnValsMutator
+	RTN_FALSE = 9
+	RTN_TRUE = 10
+
+	# PrimitiveReturnsMutator
+	RTN_ZERO_INT = 11
+	RTN_ZERO_LONG = 12
+	RTN_ZERO_DOUBLE = 13
+
+	def needs_func_elaboration(self):
+		return (self.value & MutatorType._CONST_FUNC_ELAB.value) > 0
+
+	def needs_post_source_elaboration(self):
+		return (self.value & MutatorType._CONST_POST_SOURCE_ELAB.value) > 0
 
 
 class TestStatus(Enum):

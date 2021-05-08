@@ -9,7 +9,7 @@ from result_extractor import *
 def read_mut_infos_from_file():
 	mut_infos = []
 
-	with open(mut_infos_json_filename) as json_file:
+	with open(output_mut_infos_json_filename) as json_file:
 		data = json.load(json_file)
 		for mut_info_dict in data['mutations']:
 			mut_infos.append(from_dict_to_mut_info(mut_info_dict))

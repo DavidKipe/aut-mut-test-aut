@@ -32,11 +32,9 @@ _map_post_source_elaboration_func = {
 
 
 def _post_source_elaboration(file_to_change, mut_type):
-	if (mut_type.value & MutatorType.CONST_POST_SOURCE_ELAB.value) == 0:
-		return
-
-	# there is a post elaboration to do in the source code
-	_map_post_source_elaboration_func[mut_type](file_to_change)
+	# check whether there is a post elaboration to do in the source code
+	if mut_type.needs_post_source_elaboration():
+		_map_post_source_elaboration_func[mut_type](file_to_change)
 
 
 def apply_mutator(file_to_change, mut_info):
@@ -82,16 +80,3 @@ def revert_proj_to_orig():
 
 def mutate_code(mutator_info):
 	apply_mutator(get_source_file_path(mutator_info), mutator_info)
-
-
-id = 0
-path = 'org/springframework/samples/petclinic/owner'
-filename = 'OwnerController.java'
-line_to_change = 62
-new_line_text = 'return "";'
-
-
-if __name__ == '__main__':
-	mi = MutationInfo(id, filename, path, line_to_change, '', new_line_text, None)
-	revert_proj_to_orig()
-	mutate_code(mi)

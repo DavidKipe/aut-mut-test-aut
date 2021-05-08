@@ -18,7 +18,11 @@ _map_pit_description = {
 	'replaced boolean return with false for':				MutatorType.RTN_FALSE,
 	'replaced boolean return with true for':				MutatorType.RTN_TRUE,
 	'replaced int return with 0 for':						MutatorType.RTN_ZERO_INT,
-	'replaced Integer return value with 0 for':				MutatorType.RTN_ZERO_INTEGER
+	'replaced Integer return value with 0 for':				MutatorType.RTN_ZERO_INTEGER_OBJ,
+	'replaced Long return value with 0L for':               MutatorType.RTN_ZERO_LONG_OBJ,
+	'replaced Double return value with 0 for':              MutatorType.RTN_ZERO_DOUBLE_OBJ,
+	'replaced long return with 0 for':                      MutatorType.RTN_ZERO_LONG,
+	'replaced double return with 0.0d for':                 MutatorType.RTN_ZERO_DOUBLE
 }
 
 
@@ -54,7 +58,11 @@ _map_mutated_lines = {
 	MutatorType.RTN_FALSE:				'return false;',
 	MutatorType.RTN_TRUE:				'return true;',
 	MutatorType.RTN_ZERO_INT:			'return 0;',
-	MutatorType.RTN_ZERO_INTEGER:		'return 0;'
+	MutatorType.RTN_ZERO_INTEGER_OBJ:   'return 0;',
+	MutatorType.RTN_ZERO_LONG_OBJ:      'return 0L;',
+	MutatorType.RTN_ZERO_DOUBLE_OBJ:    'return 0;',
+	MutatorType.RTN_ZERO_LONG:          'return 0;',
+	MutatorType.RTN_ZERO_DOUBLE:        'return 0.0d;'
 }
 
 
@@ -91,9 +99,8 @@ def _create_mutated_line(mut_info):
 	if mutator_type == MutatorType.UNKNOWN:
 		return #TODO
 
-	if (mutator_type.value & MutatorType.CONST_FUNC_ELAB.value) > 0:  # TODO create func for this bitwise op
-		mutator_func = _map_mutated_lines[mutator_type]
-		mutated_line = mutator_func(mut_info)
+	if mutator_type.needs_func_elaboration():
+		mutated_line = _map_mutated_lines[mutator_type](mut_info)
 	else:
 		mutated_line = _map_mutated_lines[mutator_type]
 
@@ -103,7 +110,7 @@ def _create_mutated_line(mut_info):
 def convert_pit_xml_to_mut_infos_json():
 	map_mut_type_counters = {mut_type.name: 0 for mut_type in _map_mutated_lines}
 
-	tree = ET.parse(pit_xml_report_filename)
+	tree = ET.parse(input_pit_xml_report_filename)
 	xml_root = tree.getroot()  # root = mutations tag
 
 	mutations_dict = {'mutations': []}
@@ -128,7 +135,7 @@ def convert_pit_xml_to_mut_infos_json():
 
 		map_mut_type_counters[mutator_type.name] += 1
 
-	with open(mut_infos_json_filename, 'w', encoding='utf-8') as f:
+	with open(output_mut_infos_json_filename, 'w', encoding='utf-8') as f:
 		json.dump(mutations_dict, f, ensure_ascii=False, indent=4)
 
 	return map_mut_type_counters

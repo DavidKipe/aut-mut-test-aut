@@ -15,16 +15,16 @@ source_paths = ['src/main/java']    # directories of the source code in the app 
 
 mutants_dir = 'mutants'             # directory name where the mutated files will be saved inside the app root dir
 
-run_path = ''    # path relative for the run command (optional)
-run_app_command = 'mvn spring-javaformat:apply spring-boot:run -B'  # command to run application
+command_path_run = ''    # path relative for the run command (optional)
+command_app_run = 'mvn spring-javaformat:apply spring-boot:run -B'  # command to run application
 app_ready_stdout_signal = "Started PetClinicApplication in"         # what the application write on stdout when is ready
 
 # command_app_reset = ''     # this command will be run to reset the app to the initial state (optional)
 #  #
 
 # Mutation info # (path relative to root of this tool)
-pit_xml_report_filename = 'resources/mutations_petclinic.xml'     # input file from PIT
-mut_infos_json_filename = 'resources/mutations_petclinic.json'    # generated file by this tool
+input_pit_xml_report_filename = 'resources/mutations_petclinic.xml'     # input file from PIT
+output_mut_infos_json_filename = 'resources/mutations_petclinic.json'    # generated file by this tool
 
 skipped_mutants = [51, 55, 88, 104, 105]    # list of ids of the mutants to be skipped
 #  #

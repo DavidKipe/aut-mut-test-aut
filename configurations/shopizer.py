@@ -23,8 +23,8 @@ command_app_reset = 'git checkout -- sm-shop/SALESMANAGER.h2.db sm-shop/files/st
 #  #
 
 # Mutation info # (path relative to root of this tool)
-pit_xml_report_filename = 'resources/mutations_shopizer.xml'     # input file from PIT
-mut_infos_json_filename = 'resources/mutations_shopizer.json'    # generated file by this tool
+input_pit_xml_report_filename = 'resources/mutations_shopizer.xml'     # input file from PIT
+output_mut_infos_json_filename = 'resources/mutations_shopizer.json'    # generated file by this tool
 
 skipped_mutants = []    # list of ids of the mutants to be skipped
 #  #
