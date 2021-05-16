@@ -37,6 +37,9 @@ class MutatorType(Enum):
 	RTN_ZERO_LONG = 12
 	RTN_ZERO_DOUBLE = 13
 
+	CONDITIONAL_BOUNDARY = 14 + _CONST_FUNC_ELAB
+
+
 	def needs_func_elaboration(self):
 		return (self.value & MutatorType._CONST_FUNC_ELAB.value) > 0
 

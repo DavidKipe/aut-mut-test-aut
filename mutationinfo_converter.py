@@ -22,12 +22,13 @@ _map_pit_description = {
 	'replaced Long return value with 0L for':               MutatorType.RTN_ZERO_LONG_OBJ,
 	'replaced Double return value with 0 for':              MutatorType.RTN_ZERO_DOUBLE_OBJ,
 	'replaced long return with 0 for':                      MutatorType.RTN_ZERO_LONG,
-	'replaced double return with 0.0d for':                 MutatorType.RTN_ZERO_DOUBLE
+	'replaced double return with 0.0d for':                 MutatorType.RTN_ZERO_DOUBLE,
+	'changed conditional boundary':                         MutatorType.CONDITIONAL_BOUNDARY
 }
 
 
-def _negate_cond(mut_info):
-	mutated_line = mut_info.original_line
+def _negate_cond(mutation_info):
+	mutated_line = mutation_info.original_line
 	mutated_line = re.sub(r'(\s*)if\s*\((.*)\)', r'\1if (!(\2))', mutated_line)  # negation for 'if' statement
 	mutated_line = re.sub(r'(\s*)return\s*(.*);', r'\1return !(\2);', mutated_line)  # negation for 'return' statement
 	return mutated_line
@@ -49,6 +50,25 @@ def _empty_collection(mutation_info):
 	return mut_line_template.format(collection_type)
 
 
+def _conditional_boundary(mutation_info):
+	original_line = mutation_info.original_line
+	mutated_line = original_line
+
+	result = re.search(r"(?:if|while|for)\s*(.+(?:(<=)|(<)|(>=)|(>)).+)", original_line)  # search for the conditional operator
+
+	# mutate the conditional boundary
+	if result.group(1):     # <=
+		mutated_line = re.sub(r'<=', r'<', original_line, 1)
+	elif result.group(2):   # <
+		mutated_line = re.sub(r'<', r'<=', original_line, 1)
+	elif result.group(3):   # >=
+		mutated_line = re.sub(r'>=', r'>', original_line, 1)
+	elif result.group(4):   # >
+		mutated_line = re.sub(r'>', r'>=', original_line, 1)
+
+	return mutated_line
+
+
 _map_mutated_lines = {
 	MutatorType.NEGATE_COND:			_negate_cond,
 	MutatorType.REMOVE_CALL:			'',
@@ -62,7 +82,8 @@ _map_mutated_lines = {
 	MutatorType.RTN_ZERO_LONG_OBJ:      'return 0L;',
 	MutatorType.RTN_ZERO_DOUBLE_OBJ:    'return 0;',
 	MutatorType.RTN_ZERO_LONG:          'return 0;',
-	MutatorType.RTN_ZERO_DOUBLE:        'return 0.0d;'
+	MutatorType.RTN_ZERO_DOUBLE:        'return 0.0d;',
+	MutatorType.CONDITIONAL_BOUNDARY:   _conditional_boundary
 }
 
 
