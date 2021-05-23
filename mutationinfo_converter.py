@@ -10,20 +10,27 @@ from mutationinfo import *
 from utils import get_source_file_path
 
 _map_pit_description = {
-	'negated conditional':									MutatorType.NEGATE_COND,
-	'removed call to':										MutatorType.REMOVE_CALL,
-	'replaced return value with ""':						MutatorType.RTN_EMPTY_STR,
-	'replaced return value with null for':					MutatorType.RTN_NULL,
-	'replaced return value with Collections.emptyList for':	MutatorType.RTN_EMPTY_COLLECTION,
-	'replaced boolean return with false for':				MutatorType.RTN_FALSE,
-	'replaced boolean return with true for':				MutatorType.RTN_TRUE,
-	'replaced int return with 0 for':						MutatorType.RTN_ZERO_INT,
-	'replaced Integer return value with 0 for':				MutatorType.RTN_ZERO_INTEGER_OBJ,
-	'replaced Long return value with 0L for':               MutatorType.RTN_ZERO_LONG_OBJ,
-	'replaced Double return value with 0 for':              MutatorType.RTN_ZERO_DOUBLE_OBJ,
-	'replaced long return with 0 for':                      MutatorType.RTN_ZERO_LONG,
-	'replaced double return with 0.0d for':                 MutatorType.RTN_ZERO_DOUBLE,
-	'changed conditional boundary':                         MutatorType.CONDITIONAL_BOUNDARY
+	r'negated conditional':									    MutatorType.NEGATE_COND,
+	r'removed call to':										    MutatorType.REMOVE_CALL,
+	r'replaced return value with ""':						    MutatorType.RTN_EMPTY_STR,
+	r'replaced return value with null for':					    MutatorType.RTN_NULL,
+	r'replaced return value with Collections.emptyList for':	MutatorType.RTN_EMPTY_COLLECTION,
+	r'replaced boolean return with false for':				    MutatorType.RTN_FALSE,
+	r'replaced boolean return with true for':				    MutatorType.RTN_TRUE,
+	r'replaced int return with 0 for':						    MutatorType.RTN_ZERO_INT,
+	r'replaced Integer return value with 0 for':				MutatorType.RTN_ZERO_INTEGER_OBJ,
+	r'replaced Long return value with 0L for':                  MutatorType.RTN_ZERO_LONG_OBJ,
+	r'replaced Double return value with 0 for':                 MutatorType.RTN_ZERO_DOUBLE_OBJ,
+	r'replaced long return with 0 for':                         MutatorType.RTN_ZERO_LONG,
+	r'replaced double return with 0\.0d for':                   MutatorType.RTN_ZERO_DOUBLE,
+	r'changed conditional boundary':                            MutatorType.CONDITIONAL_BOUNDARY,
+	r'Replaced (?:integer|long|float|double) addition with subtraction':        MutatorType.ARITHMETIC_ADDITION,
+	r'Replaced (?:integer|long|float|double) subtraction with addition':        MutatorType.ARITHMETIC_SUBTRACTION,
+	r'Replaced (?:integer|long|float|double) multiplication with division':     MutatorType.ARITHMETIC_MULTIPLICATION,
+	r'Replaced (?:integer|long|float|double) division with multiplication':     MutatorType.ARITHMETIC_DIVISION,
+	r'Replaced (?:integer|long|float|double) modulus with multiplication':      MutatorType.ARITHMETIC_MODULUS,
+	r'Replaced bitwise AND with OR':                            MutatorType.ARITHMETIC_AND,
+	r'Replaced bitwise OR with AND':                            MutatorType.ARITHMETIC_OR
 }
 
 
@@ -69,6 +76,10 @@ def _conditional_boundary(mutation_info):
 	return mutated_line
 
 
+def _arithmetic(mutation_info):  # TODO
+	return
+
+
 _map_mutated_lines = {
 	MutatorType.NEGATE_COND:			_negate_cond,
 	MutatorType.REMOVE_CALL:			'',
@@ -83,7 +94,14 @@ _map_mutated_lines = {
 	MutatorType.RTN_ZERO_DOUBLE_OBJ:    'return 0;',
 	MutatorType.RTN_ZERO_LONG:          'return 0;',
 	MutatorType.RTN_ZERO_DOUBLE:        'return 0.0d;',
-	MutatorType.CONDITIONAL_BOUNDARY:   _conditional_boundary
+	MutatorType.CONDITIONAL_BOUNDARY:   _conditional_boundary,
+	MutatorType.ARITHMETIC_ADDITION:    _arithmetic,
+	MutatorType.ARITHMETIC_SUBTRACTION:     _arithmetic,
+	MutatorType.ARITHMETIC_MULTIPLICATION:  _arithmetic,
+	MutatorType.ARITHMETIC_DIVISION:    _arithmetic,
+	MutatorType.ARITHMETIC_MODULUS:     _arithmetic,
+	MutatorType.ARITHMETIC_AND:         _arithmetic,
+	MutatorType.ARITHMETIC_OR:          _arithmetic
 }
 
 
@@ -104,9 +122,9 @@ def _get_orig_line(mutation_info):  # TODO try to get the entire instruction, no
 def _get_mutator_type(pit_mutator_description):
 	mutator_type = MutatorType.UNKNOWN
 
-	for pit_descr_init in _map_pit_description:
-		if pit_mutator_description.startswith(pit_descr_init):
-			mutator_type = _map_pit_description[pit_descr_init]
+	for pit_description_regex_key, mutator_type_value in _map_pit_description.items():
+		if re.search(pit_description_regex_key, pit_mutator_description):
+			mutator_type = mutator_type_value
 			break
 
 	if mutator_type == MutatorType.UNKNOWN:
