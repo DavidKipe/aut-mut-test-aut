@@ -53,6 +53,9 @@ class MutatorType(Enum):
 	ARITHMETIC_RSHIFT = 24 + _CONST_FUNC_ELAB
 	ARITHMETIC_URSHIFT = 25 + _CONST_FUNC_ELAB
 
+	INCREMENT_TO_DECREMENT = 26 + _CONST_FUNC_ELAB
+	DECREMENT_TO_INCREMENT = 27 + _CONST_FUNC_ELAB
+
 	def needs_func_elaboration(self):
 		return (self.value & MutatorType._CONST_FUNC_ELAB.value) > 0
 

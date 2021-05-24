@@ -30,7 +30,9 @@ _map_pit_description = {
 	r'Replaced (?:integer|long|float|double) division with multiplication':     MutatorType.ARITHMETIC_DIVISION,
 	r'Replaced (?:integer|long|float|double) modulus with multiplication':      MutatorType.ARITHMETIC_MODULUS,
 	r'Replaced bitwise AND with OR':                            MutatorType.ARITHMETIC_AND,
-	r'Replaced bitwise OR with AND':                            MutatorType.ARITHMETIC_OR
+	r'Replaced bitwise OR with AND':                            MutatorType.ARITHMETIC_OR,
+	r'Changed increment from \d+ to \-\d+':                     MutatorType.INCREMENT_TO_DECREMENT,
+	r'Changed increment from -\d+ to \d+':                      MutatorType.DECREMENT_TO_INCREMENT
 }
 
 
@@ -61,23 +63,59 @@ def _conditional_boundary(mutation_info):
 	original_line = mutation_info.original_line
 	mutated_line = original_line
 
-	result = re.search(r"(?:if|while|for)\s*(.+(?:(<=)|(<)|(>=)|(>)).+)", original_line)  # search for the conditional operator
+	result = re.search(r"(?<!<)[\s)\w\d](?:(<=)|(<)|(>=)|(>))(?!\w*>)", original_line)  # search for the conditional operator
+
+	if result is None:
+		print(original_line)
+		return original_line
 
 	# mutate the conditional boundary
 	if result.group(1):     # <=
-		mutated_line = re.sub(r'<=', r'<', original_line, 1)
+		mutated_line = original_line.replace('<=', '<', 1)
 	elif result.group(2):   # <
-		mutated_line = re.sub(r'<', r'<=', original_line, 1)
+		mutated_line = original_line.replace('<', '<=', 1)
 	elif result.group(3):   # >=
-		mutated_line = re.sub(r'>=', r'>', original_line, 1)
+		mutated_line = original_line.replace('>=', '>', 1)
 	elif result.group(4):   # >
-		mutated_line = re.sub(r'>', r'>=', original_line, 1)
+		mutated_line = original_line.replace('>', '>=', 1)
 
 	return mutated_line
 
 
 def _arithmetic(mutation_info):  # TODO
-	return
+	mutator_type = mutation_info.mutator_type
+	original_line = mutation_info.original_line
+	mutated_line = original_line
+
+	if mutator_type == MutatorType.ARITHMETIC_ADDITION:
+		mutated_line = original_line.replace('+', '-')
+	elif mutator_type == MutatorType.ARITHMETIC_SUBTRACTION:
+		mutated_line = original_line.replace('-', '+')
+	elif mutator_type == MutatorType.ARITHMETIC_MULTIPLICATION:
+		mutated_line = original_line.replace('*', '/')
+	elif mutator_type == MutatorType.ARITHMETIC_DIVISION:
+		mutated_line = original_line.replace('/', '*')
+	elif mutator_type == MutatorType.ARITHMETIC_MODULUS:
+		mutated_line = original_line.replace('%', '*')
+	elif mutator_type == MutatorType.ARITHMETIC_AND:
+		mutated_line = original_line.replace('&', '|')
+	elif mutator_type == MutatorType.ARITHMETIC_OR:
+		mutated_line = original_line.replace('|', '&')
+
+	return mutated_line
+
+
+def _inc_dec(mutation_info):
+	mutator_type = mutation_info.mutator_type
+	original_line = mutation_info.original_line
+	mutated_line = original_line
+
+	if mutator_type == MutatorType.INCREMENT_TO_DECREMENT:
+		mutated_line = original_line.replace('++', '--').replace('+=', '-=')
+	elif mutator_type == MutatorType.DECREMENT_TO_INCREMENT:
+		mutated_line = original_line.replace('--', '++').replace('-=', '+=')
+
+	return mutated_line
 
 
 _map_mutated_lines = {
@@ -101,7 +139,9 @@ _map_mutated_lines = {
 	MutatorType.ARITHMETIC_DIVISION:    _arithmetic,
 	MutatorType.ARITHMETIC_MODULUS:     _arithmetic,
 	MutatorType.ARITHMETIC_AND:         _arithmetic,
-	MutatorType.ARITHMETIC_OR:          _arithmetic
+	MutatorType.ARITHMETIC_OR:          _arithmetic,
+	MutatorType.INCREMENT_TO_DECREMENT:     _inc_dec,
+	MutatorType.DECREMENT_TO_INCREMENT:     _inc_dec
 }
 
 
