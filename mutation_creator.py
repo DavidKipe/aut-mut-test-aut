@@ -82,25 +82,25 @@ def _conditional_boundary(mutation_info):
 	return mutated_line
 
 
-def _arithmetic(mutation_info):  # TODO
+def _arithmetic(mutation_info):
 	mutator_type = mutation_info.mutator_type
 	original_line = mutation_info.original_line
 	mutated_line = original_line
 
 	if mutator_type == MutatorType.ARITHMETIC_ADDITION:
-		mutated_line = original_line.replace('+', '-')
+		mutated_line = original_line.replace('+', '-', 1)
 	elif mutator_type == MutatorType.ARITHMETIC_SUBTRACTION:
-		mutated_line = original_line.replace('-', '+')
+		mutated_line = original_line.replace('-', '+', 1)
 	elif mutator_type == MutatorType.ARITHMETIC_MULTIPLICATION:
-		mutated_line = original_line.replace('*', '/')
+		mutated_line = original_line.replace('*', '/', 1)
 	elif mutator_type == MutatorType.ARITHMETIC_DIVISION:
-		mutated_line = original_line.replace('/', '*')
+		mutated_line = original_line.replace('/', '*', 1)
 	elif mutator_type == MutatorType.ARITHMETIC_MODULUS:
-		mutated_line = original_line.replace('%', '*')
+		mutated_line = original_line.replace('%', '*', 1)
 	elif mutator_type == MutatorType.ARITHMETIC_AND:
-		mutated_line = original_line.replace('&', '|')
+		mutated_line = original_line.replace('&', '|', 1)
 	elif mutator_type == MutatorType.ARITHMETIC_OR:
-		mutated_line = original_line.replace('|', '&')
+		mutated_line = original_line.replace('|', '&', 1)
 
 	return mutated_line
 
@@ -186,13 +186,15 @@ def _create_mutated_line(mut_info):
 	return mutated_line
 
 
-def convert_pit_xml_to_mut_infos_json():
+def create_mut_infos_json_from_pit_xml():
 	map_mut_type_counters = {mut_type.name: 0 for mut_type in _map_mutated_lines}
 
 	tree = ET.parse(input_pit_xml_report_filename)
 	xml_root = tree.getroot()  # root = mutations tag
 
 	mutations_dict = {'mutations': []}
+
+	last_mutation_info = MutationInfo()
 
 	counter = 0
 	for mutation in xml_root:
@@ -210,7 +212,22 @@ def convert_pit_xml_to_mut_infos_json():
 		mutation_info.mutator_type =	mutator_type
 		mutation_info.mutated_line =	_create_mutated_line(mutation_info)  # lastly create the modified line
 
+		if mutation_info.original_line == mutation_info.mutated_line:
+			print("\n >>> Skipped mutation because it DID NOT PERFORM MUTATION")
+			mutation_info.short_print()
+			continue
+
+		if mutation_info.mutated_line == last_mutation_info.mutated_line:  # currently this tool does not support more than one mutator at the same line)
+			print("\n >>> Skipped mutation because is EQUAL TO THE LAST ONE")
+			print(" > LAST MUTATION")
+			last_mutation_info.short_print()
+			print(" > CURRENT MUTATION")
+			mutation_info.short_print()
+			continue
+
 		mutations_dict['mutations'].append(mutation_info.to_dict())
+
+		last_mutation_info = mutation_info
 
 		map_mut_type_counters[mutator_type.name] += 1
 
@@ -221,4 +238,4 @@ def convert_pit_xml_to_mut_infos_json():
 
 
 if __name__ == '__main__':
-	print(convert_pit_xml_to_mut_infos_json())
+	print(create_mut_infos_json_from_pit_xml())

@@ -170,6 +170,15 @@ class MutationInfo:
 
 		return mut_info_dict
 
+	def short_print(self):
+		print(f"id: {self.id}")
+		print(f"Rel folder: {self.rel_folder_path}")
+		print(f"File: {self.source_filename}")
+		print(f"Line number: {self.line_number}")
+		print(f"Type: {self.mutator_type.name}")
+		print(f"Original line: {self.original_line}")
+		print(f"Mutated line: {self.mutated_line}")
+
 
 def from_dict_to_mut_info(mut_info_dict):
 	mutation_info = MutationInfo()

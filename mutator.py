@@ -37,7 +37,7 @@ def _post_source_elaboration(file_to_change, mut_type):
 		_map_post_source_elaboration_func[mut_type](file_to_change)
 
 
-def apply_mutator(file_to_change, mut_info):
+def apply_mutation(file_to_change, mut_info):
 	filename_bak = file_to_change + backup_ext  # backup file name
 
 	copyfile(file_to_change, filename_bak)		# backup of the original file
@@ -79,4 +79,4 @@ def revert_proj_to_orig():
 
 
 def mutate_code(mutator_info):
-	apply_mutator(get_source_file_path(mutator_info), mutator_info)
+	apply_mutation(get_source_file_path(mutator_info), mutator_info)
