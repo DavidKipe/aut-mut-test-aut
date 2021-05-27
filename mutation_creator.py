@@ -217,7 +217,7 @@ def create_mut_infos_json_from_pit_xml():
 			mutation_info.short_print()
 			continue
 
-		if mutation_info.mutated_line == last_mutation_info.mutated_line:  # currently this tool does not support more than one mutator at the same line)
+		if mutation_info.is_in_same_code_line(last_mutation_info) and mutation_info.mutated_line == last_mutation_info.mutated_line:  # currently this tool does not support more than one mutator at the same line)
 			print("\n >>> Skipped mutation because is EQUAL TO THE LAST ONE")
 			print(" > LAST MUTATION")
 			last_mutation_info.short_print()

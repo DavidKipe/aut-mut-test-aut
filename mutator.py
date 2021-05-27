@@ -79,4 +79,36 @@ def revert_proj_to_orig():
 
 
 def mutate_code(mutator_info):
-	apply_mutation(get_source_file_path(mutator_info), mutator_info)
+	#apply_mutation(get_source_file_path(mutator_info), mutator_info)
+	insert_print_for_coverage(get_source_file_path(mutator_info), mutator_info)
+
+
+def insert_print_for_coverage(file_to_change, mut_info):
+	filename_bak = file_to_change + backup_ext  # backup file name
+
+	copyfile(file_to_change, filename_bak)		# backup of the original file
+
+	printout_inst = f"System.out.println(\"$#{mut_info.id}#\"); "
+
+	with open(filename_bak, 'r') as orig_file:  # open the orig file in read mode
+		with open(file_to_change, 'w') as mutating_file:  # open the mutated file in write mode
+			cur_line_number = 1  # line counter
+			check_instr_end = False  # needed to try to get rid of the entire original instruction and not only the line
+			for line in orig_file:
+				if cur_line_number == mut_info.line_number:  # if this is the line to mutate
+					leading_spaces = len(line) - len(line.lstrip())  # calculate the indentation of this line
+					indentation = leading_spaces * indentation_format
+
+					print(f"{printout_inst}{mut_info.mutated_line}")
+					mutating_file.write(f"{indentation}{printout_inst}{mut_info.original_line}\n")  # write the original line plus the printout
+					# if there is no end of instruction (;) at this line and it is not a NEGATE_COND (does not even support multi line mutator)
+					# if not mut_info.mutator_type == MutatorType.NEGATE_COND and not re.search(r";\s*(//.*)?$", line):
+					# 	check_instr_end = True  # flag to check the end of the original instruction for the next lines
+				else:
+					# if check_instr_end:
+					# 	if re.search(r";\s*(//.*)?$", line):  # check if there is a semicolon at the end of the line
+					# 		check_instr_end = False  # if so stop to check for the end of the instruction
+					# 	continue  # continue without write this line
+					mutating_file.write(line)  # copy the line original line to the mutating file
+				cur_line_number += 1
+

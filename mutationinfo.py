@@ -170,6 +170,11 @@ class MutationInfo:
 
 		return mut_info_dict
 
+	def is_in_same_code_line(self, other_mut_info):
+		return self.rel_folder_path == other_mut_info.rel_folder_path and \
+			self.source_filename == other_mut_info.source_filename and \
+			self.line_number == other_mut_info.line_number
+
 	def short_print(self):
 		print(f"id: {self.id}")
 		print(f"Rel folder: {self.rel_folder_path}")
