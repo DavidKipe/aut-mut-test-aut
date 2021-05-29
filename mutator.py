@@ -45,21 +45,13 @@ def apply_mutation(file_to_change, mut_info):
 	with open(filename_bak, 'r') as orig_file:  # open the orig file in read mode
 		with open(file_to_change, 'w') as mutating_file:  # open the mutated file in write mode
 			cur_line_number = 1  # line counter
-			check_instr_end = False  # needed to try to get rid of the entire original instruction and not only the line
 			for line in orig_file:
 				if cur_line_number == mut_info.line_number:  # if this is the line to mutate
 					leading_spaces = len(line) - len(line.lstrip())  # calculate the indentation of this line
 					indentation = leading_spaces * indentation_format
-					mutating_file.write(indentation + '//' + line.strip() + orig_line_tag + '\n')  # write the orig line commented
-					mutating_file.write(indentation + mut_info.mutated_line + mutate_line_tag + '\n')  # write the mutated line
-					# if there is no end of instruction (;) at this line and it is not a NEGATE_COND (does not even support multi line mutator)
-					if not mut_info.mutator_type == MutatorType.NEGATE_COND and not re.search(r";\s*(//.*)?$", line):
-						check_instr_end = True  # flag to check the end of the original instruction for the next lines
+					mutating_file.write(f"{indentation}//{line.strip()}{orig_line_tag}\n")  # write the orig line commented
+					mutating_file.write(f"{indentation}{mut_info.mutated_line}{mutate_line_tag}\n")  # write the mutated line
 				else:
-					if check_instr_end:
-						if re.search(r";\s*(//.*)?$", line):  # check if there is a semicolon at the end of the line
-							check_instr_end = False  # if so stop to check for the end of the instruction
-						continue  # continue without write this line
 					mutating_file.write(line)  # copy the line original line to the mutating file
 				cur_line_number += 1
 
@@ -88,27 +80,21 @@ def insert_print_for_coverage(file_to_change, mut_info):
 
 	copyfile(file_to_change, filename_bak)		# backup of the original file
 
-	printout_inst = f"System.out.println(\"$#{mut_info.id}#\"); "
+	print_out_instr = f"System.out.println(\"$#{mut_info.id}#\");"
 
 	with open(filename_bak, 'r') as orig_file:  # open the orig file in read mode
 		with open(file_to_change, 'w') as mutating_file:  # open the mutated file in write mode
 			cur_line_number = 1  # line counter
-			check_instr_end = False  # needed to try to get rid of the entire original instruction and not only the line
 			for line in orig_file:
 				if cur_line_number == mut_info.line_number:  # if this is the line to mutate
 					leading_spaces = len(line) - len(line.lstrip())  # calculate the indentation of this line
 					indentation = leading_spaces * indentation_format
 
-					print(f"{printout_inst}{mut_info.mutated_line}")
-					mutating_file.write(f"{indentation}{printout_inst}{mut_info.original_line}\n")  # write the original line plus the printout
-					# if there is no end of instruction (;) at this line and it is not a NEGATE_COND (does not even support multi line mutator)
-					# if not mut_info.mutator_type == MutatorType.NEGATE_COND and not re.search(r";\s*(//.*)?$", line):
-					# 	check_instr_end = True  # flag to check the end of the original instruction for the next lines
+					if re.match(r'.*else\s+if.*', mut_info.mutated_line):  # INFO: for "else if" currently it can not fully support coverage
+						mutating_file.write(f"{indentation}{mut_info.original_line} {print_out_instr}\n")  # write the original line plus the print out at the end of the line
+					else:
+						mutating_file.write(f"{indentation}{print_out_instr} {mut_info.original_line}\n")  # write the original line plus the print out at the beginning of the line
 				else:
-					# if check_instr_end:
-					# 	if re.search(r";\s*(//.*)?$", line):  # check if there is a semicolon at the end of the line
-					# 		check_instr_end = False  # if so stop to check for the end of the instruction
-					# 	continue  # continue without write this line
 					mutating_file.write(line)  # copy the line original line to the mutating file
 				cur_line_number += 1
 

@@ -26,7 +26,7 @@ app_ready_stdout_signal = "Started PetClinicApplication in"         # what the a
 input_pit_xml_report_filename = 'resources/mutations_petclinic.xml'     # input file from PIT
 output_mut_infos_json_filename = 'resources/mutations_petclinic.json'    # generated file by this tool
 
-skipped_mutants = [51, 55, 88, 104, 105]    # list of ids of the mutants to be skipped
+mutants_to_skip = [51, 55, 88, 104, 105]    # list of ids of the mutants to be skipped
 #  #
 
 # Information about test suites #

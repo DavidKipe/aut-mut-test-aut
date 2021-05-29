@@ -15,14 +15,17 @@ _map_pit_description = {
 	r'replaced return value with ""':						    MutatorType.RTN_EMPTY_STR,
 	r'replaced return value with null for':					    MutatorType.RTN_NULL,
 	r'replaced return value with Collections.emptyList for':	MutatorType.RTN_EMPTY_COLLECTION,
+	r'replaced return value with Optional.empty for':           MutatorType.RTN_EMPTY_OPTIONAL,
 	r'replaced boolean return with false for':				    MutatorType.RTN_FALSE,
 	r'replaced boolean return with true for':				    MutatorType.RTN_TRUE,
 	r'replaced int return with 0 for':						    MutatorType.RTN_ZERO_INT,
+	r'replaced long return with 0 for':                         MutatorType.RTN_ZERO_LONG,
+	r'replaced double return with 0\.0d for':                   MutatorType.RTN_ZERO_DOUBLE,
 	r'replaced Integer return value with 0 for':				MutatorType.RTN_ZERO_INTEGER_OBJ,
 	r'replaced Long return value with 0L for':                  MutatorType.RTN_ZERO_LONG_OBJ,
 	r'replaced Double return value with 0 for':                 MutatorType.RTN_ZERO_DOUBLE_OBJ,
-	r'replaced long return with 0 for':                         MutatorType.RTN_ZERO_LONG,
-	r'replaced double return with 0\.0d for':                   MutatorType.RTN_ZERO_DOUBLE,
+	r'replaced Boolean return with False for':                  MutatorType.RTN_FALSE_OBJ,
+	r'replaced Boolean return with True for':                   MutatorType.RTN_TRUE_OBJ,
 	r'changed conditional boundary':                            MutatorType.CONDITIONAL_BOUNDARY,
 	r'Replaced (?:integer|long|float|double) addition with subtraction':        MutatorType.ARITHMETIC_ADDITION,
 	r'Replaced (?:integer|long|float|double) subtraction with addition':        MutatorType.ARITHMETIC_SUBTRACTION,
@@ -40,12 +43,12 @@ def _negate_cond(mutation_info):
 	mutated_line = mutation_info.original_line
 	mutated_line = re.sub(r'(\s*)if\s*\((.*)\)', r'\1if (!(\2))', mutated_line)  # negation for 'if' statement
 	mutated_line = re.sub(r'(\s*)return\s*(.*);', r'\1return !(\2);', mutated_line)  # negation for 'return' statement
+	mutated_line = re.sub(r'(\s*)while\s*\((.*)\)', r'\1while (!(\2))', mutated_line)  # negation for 'while' statement
+	mutated_line = re.sub(r'(\s*)for\s*\((.*);\s*(.*);(.*)\)', r'\1for (\2; !(\3);\4)', mutated_line)  # negation for 'while' statement
 	return mutated_line
 
 
 def _empty_collection(mutation_info):
-	mut_line_template = 'return Collections.empty{}();'
-
 	# searching for function signature to get the return type of the collection
 	collection_type = "List"  # default is List
 	with open(_get_source_file_path(mutation_info), 'r') as source_file:
@@ -56,7 +59,7 @@ def _empty_collection(mutation_info):
 				collection_type = result.group(1)
 				break
 
-	return mut_line_template.format(collection_type)
+	return f'return Collections.empty{collection_type}();'
 
 
 def _conditional_boundary(mutation_info):
@@ -124,14 +127,17 @@ _map_mutated_lines = {
 	MutatorType.RTN_EMPTY_STR:			'return "";',
 	MutatorType.RTN_NULL:				'return null;',
 	MutatorType.RTN_EMPTY_COLLECTION:	_empty_collection,
+	MutatorType.RTN_EMPTY_OPTIONAL:     'return Optional.empty();',
 	MutatorType.RTN_FALSE:				'return false;',
 	MutatorType.RTN_TRUE:				'return true;',
 	MutatorType.RTN_ZERO_INT:			'return 0;',
+	MutatorType.RTN_ZERO_LONG:          'return 0;',
+	MutatorType.RTN_ZERO_DOUBLE:        'return 0.0d;',
 	MutatorType.RTN_ZERO_INTEGER_OBJ:   'return 0;',
 	MutatorType.RTN_ZERO_LONG_OBJ:      'return 0L;',
 	MutatorType.RTN_ZERO_DOUBLE_OBJ:    'return 0;',
-	MutatorType.RTN_ZERO_LONG:          'return 0;',
-	MutatorType.RTN_ZERO_DOUBLE:        'return 0.0d;',
+	MutatorType.RTN_FALSE_OBJ:          'return Boolean.False;',
+	MutatorType.RTN_TRUE_OBJ:           'return Boolean.True;',
 	MutatorType.CONDITIONAL_BOUNDARY:   _conditional_boundary,
 	MutatorType.ARITHMETIC_ADDITION:    _arithmetic,
 	MutatorType.ARITHMETIC_SUBTRACTION:     _arithmetic,
@@ -168,7 +174,7 @@ def _get_mutator_type(pit_mutator_description):
 			break
 
 	if mutator_type == MutatorType.UNKNOWN:
-		print("Warning: mutator UNKNOWN")
+		print(f"\nWARNING: mutator UNKNOWN with description \"{pit_mutator_description}\"")
 
 	return mutator_type
 
@@ -187,7 +193,8 @@ def _create_mutated_line(mut_info):
 
 
 def create_mut_infos_json_from_pit_xml():
-	map_mut_type_counters = {mut_type.name: 0 for mut_type in _map_mutated_lines}
+	map_mut_counters = {mut_type.name: 0 for mut_type in _map_mutated_lines}
+	skipped_mutants = []
 
 	tree = ET.parse(input_pit_xml_report_filename)
 	xml_root = tree.getroot()  # root = mutations tag
@@ -212,29 +219,48 @@ def create_mut_infos_json_from_pit_xml():
 		mutation_info.mutator_type =	mutator_type
 		mutation_info.mutated_line =	_create_mutated_line(mutation_info)  # lastly create the modified line
 
-		if mutation_info.original_line == mutation_info.mutated_line:
-			print("\n >>> Skipped mutation because it DID NOT PERFORM MUTATION")
+		if mutation_info.mutator_type == MutatorType.UNKNOWN:
+			print(f"\n >>> Skipped mutation {mutation_info.id} because the mutation is UNKNOWN")
 			mutation_info.short_print()
+			skipped_mutants.append(mutation_info.id)
 			continue
 
-		if mutation_info.is_in_same_code_line(last_mutation_info) and mutation_info.mutated_line == last_mutation_info.mutated_line:  # currently this tool does not support more than one mutator at the same line)
-			print("\n >>> Skipped mutation because is EQUAL TO THE LAST ONE")
+		if mutation_info.original_line == mutation_info.mutated_line:
+			print(f"\n >>> Skipped mutation {mutation_info.id} because it DID NOT PERFORM MUTATION")
+			mutation_info.short_print()
+			skipped_mutants.append(mutation_info.id)
+			continue
+
+		if mutation_info.is_in_same_code_line(last_mutation_info) and mutation_info.mutated_line == last_mutation_info.mutated_line:  # currently this tool does not support more than one mutator of the same type per line)
+			print(f"\n >>> Skipped mutation {mutation_info.id} because is EQUAL TO THE LAST ONE")
 			print(" > LAST MUTATION")
 			last_mutation_info.short_print()
 			print(" > CURRENT MUTATION")
 			mutation_info.short_print()
+			skipped_mutants.append(mutation_info.id)
+			continue
+
+		if (mutation_info.mutator_type.is_return_type() and "return" not in mutation_info.original_line) or \
+			(mutation_info.mutator_type == MutatorType.REMOVE_CALL and mutation_info.original_line.startswith('.')):
+			print(f"\n >>> Skipped mutation {mutation_info.id} because is an INCONSISTENT MUTATION")
+			mutation_info.short_print()
+			skipped_mutants.append(mutation_info.id)
 			continue
 
 		mutations_dict['mutations'].append(mutation_info.to_dict())
 
 		last_mutation_info = mutation_info
 
-		map_mut_type_counters[mutator_type.name] += 1
+		map_mut_counters[mutator_type.name] += 1
 
 	with open(output_mut_infos_json_filename, 'w', encoding='utf-8') as f:
 		json.dump(mutations_dict, f, ensure_ascii=False, indent=4)
 
-	return map_mut_type_counters
+	map_mut_counters['total_mutants'] = sum(map_mut_counters.values())
+	map_mut_counters['total_skipped_mutants'] = len(skipped_mutants)
+	map_mut_counters['skipped_mutants'] = skipped_mutants
+
+	return map_mut_counters
 
 
 if __name__ == '__main__':

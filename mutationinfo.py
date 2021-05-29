@@ -17,6 +17,7 @@ class MutatorType(Enum):
 
 	# EmptyObjectReturnValsMutator
 	RTN_EMPTY_COLLECTION = 2 + _CONST_FUNC_ELAB + _CONST_POST_SOURCE_ELAB
+	RTN_EMPTY_OPTIONAL = 30
 	RTN_EMPTY_STR = 3
 	RTN_ZERO_INTEGER_OBJ = 4
 	RTN_ZERO_LONG_OBJ = 5
@@ -28,9 +29,13 @@ class MutatorType(Enum):
 	# NullReturnValsMutator
 	RTN_NULL = 8
 
-	# BooleanFalseReturnValsMutator, BooleanTrueReturnValsMutator
+	# BooleanFalseReturnValsMutator
 	RTN_FALSE = 9
+	RTN_FALSE_OBJ = 28
+
+	# BooleanTrueReturnValsMutator
 	RTN_TRUE = 10
+	RTN_TRUE_OBJ = 29
 
 	# PrimitiveReturnsMutator
 	RTN_ZERO_INT = 11
@@ -53,6 +58,7 @@ class MutatorType(Enum):
 	ARITHMETIC_RSHIFT = 24 + _CONST_FUNC_ELAB
 	ARITHMETIC_URSHIFT = 25 + _CONST_FUNC_ELAB
 
+	# IncrementsMutator
 	INCREMENT_TO_DECREMENT = 26 + _CONST_FUNC_ELAB
 	DECREMENT_TO_INCREMENT = 27 + _CONST_FUNC_ELAB
 
@@ -61,6 +67,9 @@ class MutatorType(Enum):
 
 	def needs_post_source_elaboration(self):
 		return (self.value & MutatorType._CONST_POST_SOURCE_ELAB.value) > 0
+
+	def is_return_type(self):
+		return self.value in [2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 28, 29, 30]
 
 
 class TestStatus(Enum):

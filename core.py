@@ -16,7 +16,8 @@ async def main():
 	execution_tag = datetime.now().strftime("%Y%m%d-%H%M%S")  # tag of this execution (it is the name of the output directory)
 
 	revert_proj_to_orig()  # ensure the project to be original at the beginning
-	create_mut_infos_json_from_pit_xml()  # convert the XML mutations info of PIT in our JSON format (it needs a clean app project, not mutated app)
+	map_mut_counters = create_mut_infos_json_from_pit_xml()  # convert the XML mutations info of PIT in our JSON format (it needs a clean app project, not mutated app)
+	print("\n > Mutations created:\n" + json.dumps(map_mut_counters, indent=2))  # print out the mutations creation result
 	mutations_info = read_mut_infos_from_file()  # read the info about mutations
 
 	mutated_app_manager = MutatedAppManager()
@@ -25,7 +26,7 @@ async def main():
 
 	for mut_info in mutations_info:  # for each mutant
 
-		if mut_info.id in skipped_mutants:  # check if this mutant must be skipped # TODO skipped in creation phase?
+		if mut_info.id in mutants_to_skip:  # check if this mutant must be skipped # TODO skipped in creation phase?
 			continue
 
 		try:
