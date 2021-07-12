@@ -4,7 +4,7 @@ config_name = "Shopizer"
 # -- configuration -- #
 
 # Application (SUT) config #
-app_root_dir = '/home/david/IdeaProjects/shopizer'    # root directory of the application
+app_root_dir = '/home/david/IdeaProjects/shopizer-mutations'    # root directory of the application
 
 backup_ext = '.bak'						# this string will be appened to the original filename
 orig_line_tag = ' // original line'		# this string will be appened to the original commented line

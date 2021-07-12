@@ -37,13 +37,12 @@ def _post_source_elaboration(file_to_change, mut_type):
 		_map_post_source_elaboration_func[mut_type](file_to_change)
 
 
-def apply_mutation(file_to_change, mut_info):
-	filename_bak = file_to_change + backup_ext  # backup file name
+# apply the mutator to the source file
+def _apply_mutation(file_path_to_change, mut_info):
+	backup_file_path = backup_source_file(file_path_to_change)
 
-	copyfile(file_to_change, filename_bak)		# backup of the original file
-
-	with open(filename_bak, 'r') as orig_file:  # open the orig file in read mode
-		with open(file_to_change, 'w') as mutating_file:  # open the mutated file in write mode
+	with open(backup_file_path, 'r') as orig_file:  # open the orig file (backed up) in read mode
+		with open(file_path_to_change, 'w') as mutating_file:  # open the mutated file in write mode
 			cur_line_number = 1  # line counter
 			for line in orig_file:
 				if cur_line_number == mut_info.line_number:  # if this is the line to mutate
@@ -55,9 +54,36 @@ def apply_mutation(file_to_change, mut_info):
 					mutating_file.write(line)  # copy the line original line to the mutating file
 				cur_line_number += 1
 
-	_post_source_elaboration(file_to_change, mut_info.mutator_type)
+	_post_source_elaboration(file_path_to_change, mut_info.mutator_type)
 
-	save_mutant_and_mut_info(file_to_change, mut_info)
+	save_mutant_and_mut_info(file_path_to_change, mut_info)
+
+
+# insert a new print instruction for mutation coverage analysis instead inserting the mutation
+def _insert_print_for_coverage(file_path_to_change, mut_info):
+	backup_source_file(file_path_to_change)  # only the first will create the backup file (that will be the original one without coverage prints)
+
+	tmp_file_to_change = copyfile_in_place_as_tmp(file_path_to_change)  # this temporary file is needed to create the one with the new print instruction
+
+	print_out_instr = f"System.out.println(\"$#{mut_info.id}#\");"  # print instruction to write on the file
+
+	with open(tmp_file_to_change, 'r') as orig_file:  # open the orig file in read mode
+		with open(file_path_to_change, 'w') as mutating_file:  # open the mutated file in write mode
+			cur_line_number = 1  # line counter
+			for line in orig_file:
+				if cur_line_number == mut_info.line_number:  # if this is the line to mutate
+					leading_spaces = len(line) - len(line.lstrip())  # calculate the indentation of this line
+					indentation = leading_spaces * indentation_format
+
+					if re.match(r'.*else\s+if.*', mut_info.mutated_line):  # INFO: for "else if" currently it can not fully support coverage
+						mutating_file.write(f"{indentation}{line.strip()} {print_out_instr}\n")  # write the original line plus the print out at the end of the line
+					else:
+						mutating_file.write(f"{indentation}{print_out_instr} {line.strip()}\n")  # write the original line plus the print out at the beginning of the line
+				else:
+					mutating_file.write(line)  # copy the line original line to the mutating file
+				cur_line_number += 1
+
+	remove_file(tmp_file_to_change)
 
 
 def revert_proj_to_orig():
@@ -71,30 +97,8 @@ def revert_proj_to_orig():
 
 
 def mutate_code(mutator_info):
-	#apply_mutation(get_source_file_path(mutator_info), mutator_info)
-	insert_print_for_coverage(get_source_file_path(mutator_info), mutator_info)
+	_apply_mutation(get_source_file_path(mutator_info), mutator_info)
 
 
-def insert_print_for_coverage(file_to_change, mut_info):
-	filename_bak = file_to_change + backup_ext  # backup file name
-
-	copyfile(file_to_change, filename_bak)		# backup of the original file
-
-	print_out_instr = f"System.out.println(\"$#{mut_info.id}#\");"
-
-	with open(filename_bak, 'r') as orig_file:  # open the orig file in read mode
-		with open(file_to_change, 'w') as mutating_file:  # open the mutated file in write mode
-			cur_line_number = 1  # line counter
-			for line in orig_file:
-				if cur_line_number == mut_info.line_number:  # if this is the line to mutate
-					leading_spaces = len(line) - len(line.lstrip())  # calculate the indentation of this line
-					indentation = leading_spaces * indentation_format
-
-					if re.match(r'.*else\s+if.*', mut_info.mutated_line):  # INFO: for "else if" currently it can not fully support coverage
-						mutating_file.write(f"{indentation}{mut_info.original_line} {print_out_instr}\n")  # write the original line plus the print out at the end of the line
-					else:
-						mutating_file.write(f"{indentation}{print_out_instr} {mut_info.original_line}\n")  # write the original line plus the print out at the beginning of the line
-				else:
-					mutating_file.write(line)  # copy the line original line to the mutating file
-				cur_line_number += 1
-
+def insert_print_for_mutation_coverage(mutator_info):
+	_insert_print_for_coverage(get_source_file_path(mutator_info), mutator_info)

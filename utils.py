@@ -4,7 +4,7 @@ from shutil import copyfile
 from result_extractor import *
 
 
-# TODO re-organize some of these methods in files
+# TODO re-organize some of these methods in a new file "files manager"
 
 def read_mut_infos_from_file():
 	mut_infos = []
@@ -88,8 +88,8 @@ def save_mut_info(mut_info, execution_tag):
 
 
 def get_source_file_path(mut_info):
-	if not mut_info.source_root_path:
-		for source_path in source_paths:
+	if not mut_info.source_root_path:  # this is for support multiple root paths of the source code
+		for source_path in source_paths:  # search for the file existing in one of the source paths in the configuration
 			file_path = os.path.join(source_path, mut_info.rel_folder_path, mut_info.source_filename)
 			if os.path.isfile(file_path):
 				mut_info.source_root_path = source_path
@@ -98,3 +98,25 @@ def get_source_file_path(mut_info):
 		raise FileNotFoundError
 	else:
 		return os.path.join(mut_info.source_root_path, mut_info.rel_folder_path, mut_info.source_filename)
+
+
+def backup_source_file(file_path_to_change):  # back up the original source file and return the backed up file path
+	backup_file_path = file_path_to_change + backup_ext  # backup file name
+
+	if not os.path.exists(backup_file_path):
+		copyfile(file_path_to_change, backup_file_path)  # backup of the original file if not already exists
+
+	return backup_file_path
+
+
+def copyfile_in_place_as_tmp(file_to_copy):
+	tmp_file_path = file_to_copy + '.tmp'  # temporary file name
+	copyfile(file_to_copy, tmp_file_path)  # create the temporary copying the original
+	return tmp_file_path
+
+
+def remove_file(file_path):
+	try:
+		os.remove(file_path)
+	except OSError:
+		pass

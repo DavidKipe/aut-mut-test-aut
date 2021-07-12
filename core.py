@@ -14,10 +14,11 @@ from testsuite_manager import TestSuiteManager
 
 async def main():
 	execution_tag = datetime.now().strftime("%Y%m%d-%H%M%S")  # tag of this execution (it is the name of the output directory)
+	# execution_tag = "test_shopizer_stability_assertions_3"
 
-	revert_proj_to_orig()  # ensure the project to be original at the beginning
-	map_mut_counters = create_mut_infos_json_from_pit_xml()  # convert the XML mutations info of PIT in our JSON format (it needs a clean app project, not mutated app)
-	print("\n > Mutations created:\n" + json.dumps(map_mut_counters, indent=2))  # print out the mutations creation result
+	#revert_proj_to_orig()  # ensure the project to be original at the beginning
+	#map_mut_counters = create_mut_infos_json_from_pit_xml()  # convert the XML mutations info of PIT in our JSON format (it needs a clean app project, not mutated app)
+	#print("\n > Mutations created:\n" + json.dumps(map_mut_counters, indent=2))  # print out the mutations creation result
 	mutations_info = read_mut_infos_from_file()  # read the info about mutations
 
 	mutated_app_manager = MutatedAppManager()
@@ -30,7 +31,8 @@ async def main():
 			continue
 
 		try:
-			mutate_code(mut_info)  # run the mutator
+			# mutate_code(mut_info)  # run the mutator
+			insert_print_for_mutation_coverage(mut_info)
 
 			# for testsuite_tag in test_suite_manager.get_test_suite_tags():  # for each test suite, run the mutated app and then the test suite
 			# 	mutated_app_manager.run_async()  # run the application mutated

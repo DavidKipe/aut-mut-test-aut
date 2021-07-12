@@ -192,12 +192,13 @@ def _create_mutated_line(mut_info):
 	return mutated_line
 
 
+# convert information from XML output of PIT tool in a new JSON code adding or dropping information
 def create_mut_infos_json_from_pit_xml():
 	map_mut_counters = {mut_type.name: 0 for mut_type in _map_mutated_lines}
 	skipped_mutants = []
 
 	tree = ET.parse(input_pit_xml_report_filename)
-	xml_root = tree.getroot()  # root = mutations tag
+	xml_root = tree.getroot()  # root = <mutations> tag in XML
 
 	mutations_dict = {'mutations': []}
 
