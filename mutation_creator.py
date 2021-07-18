@@ -193,7 +193,7 @@ def _create_mutated_line(mut_info):
 
 
 # convert information from XML output of PIT tool in a new JSON code adding or dropping information
-def create_mut_infos_json_from_pit_xml():
+def create_mut_infos_json_from_pit_xml(output_mut_file_json=output_mut_infos_json_filename):
 	map_mut_counters = {mut_type.name: 0 for mut_type in _map_mutated_lines}
 	skipped_mutants = []
 
@@ -207,9 +207,15 @@ def create_mut_infos_json_from_pit_xml():
 	counter = 0
 	for mutation in xml_root:
 		mutation_info = MutationInfo()
-		mutation_info.id = counter
 
-		counter += 1
+		# search in XML file for 'MasterID', that is a custom ID
+		# mixing custom IDs and IDs created by the sequence may lead in duplicated ID
+		master_id_elem = mutation.find('MasterID')
+		if master_id_elem is not None:
+			mutation_info.id = int(master_id_elem.text)
+		else:
+			mutation_info.id = counter
+			counter += 1
 
 		mutator_type = _get_mutator_type(mutation.find('description').text)
 
@@ -219,6 +225,11 @@ def create_mut_infos_json_from_pit_xml():
 		mutation_info.original_line =	_get_orig_line(mutation_info).strip()
 		mutation_info.mutator_type =	mutator_type
 		mutation_info.mutated_line =	_create_mutated_line(mutation_info)  # lastly create the modified line
+
+		try:  # optional field
+			mutation_info.method_name = mutation.find('mutatedMethod').text
+		except AttributeError:
+			pass
 
 		if mutation_info.mutator_type == MutatorType.UNKNOWN:
 			print(f"\n >>> Skipped mutation {mutation_info.id} because the mutation is UNKNOWN")
@@ -254,7 +265,7 @@ def create_mut_infos_json_from_pit_xml():
 
 		map_mut_counters[mutator_type.name] += 1
 
-	with open(output_mut_infos_json_filename, 'w', encoding='utf-8') as f:
+	with open(output_mut_file_json, 'w', encoding='utf-8') as f:
 		json.dump(mutations_dict, f, ensure_ascii=False, indent=4)
 
 	map_mut_counters['total_mutants'] = sum(map_mut_counters.values())

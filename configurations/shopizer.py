@@ -23,8 +23,8 @@ command_app_reset = 'git checkout -- sm-shop/SALESMANAGER.h2.db sm-shop/files/st
 #  #
 
 # Mutation info # (path relative to root of this tool)
-input_pit_xml_report_filename = 'resources/shopizer_all_mutations_sorted.xml'     # input file from PIT
-output_mut_infos_json_filename = 'resources/shopizer_all_mutations_sorted.json'    # generated file by this tool
+input_pit_xml_report_filename = 'resources/shopizer_mutations_coverage_sorted.xml'     # input file from PIT
+output_mut_infos_json_filename = 'resources/shopizer_mutations_coverage_sorted.json'    # generated file by this tool
 
 mutants_to_skip = []    # list of ids of the mutants to be skipped
 #  #
@@ -43,12 +43,12 @@ test_suites = [
 		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
 		'mvn_opts': '-Dtest="assertions.**" -Djava.awt.headless=true'
 	},
-	{
-		'name': 'ReTest Recheck explicit check',
-		'tag': 'retest_explicit',
-		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
-		'mvn_opts': '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
-	},
+	# {
+	# 	'name': 'ReTest Recheck explicit check',
+	# 	'tag': 'retest_explicit',
+	# 	'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
+	# 	'mvn_opts': '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
+	# },
 	# {
 	# 	'name': 'ReTest Recheck implicit check',
 	# 	'tag': 'retest_implicit',

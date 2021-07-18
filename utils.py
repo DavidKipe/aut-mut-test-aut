@@ -6,10 +6,10 @@ from result_extractor import *
 
 # TODO re-organize some of these methods in a new file "files manager"
 
-def read_mut_infos_from_file():
+def read_mut_infos_from_file(mutations_file_json=output_mut_infos_json_filename):
 	mut_infos = []
 
-	with open(output_mut_infos_json_filename) as json_file:
+	with open(mutations_file_json) as json_file:
 		data = json.load(json_file)
 		for mut_info_dict in data['mutations']:
 			mut_infos.append(from_dict_to_mut_info(mut_info_dict))
