@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-import json
 import re
 import xml.etree.ElementTree as ET
 from linecache import getline
 
 from config import *
 from mutationinfo import *
-from utils import get_source_file_path
+from utils import get_source_file_path, write_dict_to_file_json
 
 _map_pit_description = {
 	r'negated conditional':									    MutatorType.NEGATE_COND,
@@ -265,8 +264,7 @@ def create_mut_infos_json_from_pit_xml(output_mut_file_json=output_mut_infos_jso
 
 		map_mut_counters[mutator_type.name] += 1
 
-	with open(output_mut_file_json, 'w', encoding='utf-8') as f:
-		json.dump(mutations_dict, f, ensure_ascii=False, indent=4)
+	write_dict_to_file_json(mutations_dict, output_mut_file_json)
 
 	map_mut_counters['total_mutants'] = sum(map_mut_counters.values())
 	map_mut_counters['total_skipped_mutants'] = len(skipped_mutants)

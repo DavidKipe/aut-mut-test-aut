@@ -120,3 +120,8 @@ def remove_file(file_path):
 		os.remove(file_path)
 	except OSError:
 		pass
+
+
+def write_dict_to_file_json(dictionary, output_filename):
+	with open(output_filename, 'w', encoding='utf-8') as f:
+		json.dump(dictionary, f, ensure_ascii=False, indent=4)
