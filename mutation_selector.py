@@ -19,6 +19,9 @@ def selector_max_mutants_per_method(input_file_json, output_file_json, max_mutan
 
 		method_mutants_groups.append(mutants_sample)
 
-	mutants_selected = {'mutations': [mutation.to_dict() for method_mutants in method_mutants_groups for mutation in method_mutants]}
+	mutants_selected_list = [mutation for method_mutants in method_mutants_groups for mutation in method_mutants]  # flatten the mutant groups list
+	mutants_selected_list.sort(key=lambda mutant: mutant.id)  # reorder by id
 
-	utils.write_dict_to_file_json(mutants_selected, output_file_json)
+	mutants_selected = {'mutations': [mutation.to_dict() for mutation in mutants_selected_list]}  # trasform in dictionary for JSON convertion
+
+	utils.write_dict_to_file_json(mutants_selected, output_file_json)  # write into JSON file

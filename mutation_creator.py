@@ -208,13 +208,13 @@ def create_mut_infos_json_from_pit_xml(output_mut_file_json=output_mut_infos_jso
 		mutation_info = MutationInfo()
 
 		# search in XML file for 'MasterID', that is a custom ID
-		# mixing custom IDs and IDs created by the sequence may lead in duplicated ID
 		master_id_elem = mutation.find('MasterID')
 		if master_id_elem is not None:
-			mutation_info.id = int(master_id_elem.text)
-		else:
-			mutation_info.id = counter
-			counter += 1
+			mutation_info.master_id = int(master_id_elem.text)
+
+		# created ID by sequence
+		mutation_info.id = counter
+		counter += 1
 
 		mutator_type = _get_mutator_type(mutation.find('description').text)
 

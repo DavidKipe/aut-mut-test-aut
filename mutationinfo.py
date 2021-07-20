@@ -151,6 +151,7 @@ class MutationInfo:
 	original_line: str = ''
 	mutated_line: str = ''
 	mutator_type: MutatorType = MutatorType.UNKNOWN
+	master_id: int = None  # optional
 	method_name: str = ''  # optional
 	mutation_results: List[MutationTestsResult] = field(default_factory=list)  # optional
 
@@ -171,6 +172,9 @@ class MutationInfo:
 			'mutatedLine': self.mutated_line,
 			'mutatorTag': self.mutator_type.name
 		}
+
+		if self.master_id is not None:
+			mut_info_dict['MasterID'] = self.master_id
 
 		if self.method_name:
 			mut_info_dict['methodName'] = self.method_name
@@ -207,5 +211,6 @@ def from_dict_to_mut_info(mut_info_dict):
 	mutation_info.original_line =	mut_info_dict['originalLine']
 	mutation_info.mutated_line =	mut_info_dict['mutatedLine']
 	mutation_info.mutator_type =	MutatorType[mut_info_dict['mutatorTag']]
+	mutation_info.master_id =       mut_info_dict['MasterID']
 	mutation_info.method_name =     mut_info_dict['methodName']
 	return mutation_info

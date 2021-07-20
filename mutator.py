@@ -96,6 +96,13 @@ def revert_proj_to_orig():
 					os.remove(abspath)
 
 
+def revert_sourcefile_to_orig(mutation_info):
+	mutated_file = get_source_file_path(mutation_info)
+	backup_file = mutated_file + backup_ext
+	copyfile(backup_file, mutated_file)
+	os.remove(backup_file)
+
+
 def mutate_code(mutator_info):
 	_apply_mutation(get_source_file_path(mutator_info), mutator_info)
 

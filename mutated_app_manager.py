@@ -22,7 +22,9 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 
 	_proc = None
 
-	_rdy_event = Event()
+	_ready_event = Event()
+	_shutdown_event = Event()
+	_is_build_failure = False
 
 	_stdout_text = ""
 
@@ -38,31 +40,39 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 			with self._proc.stdout as stdout:  # capture the output
 				for stdout_line in stdout:
 					line_decoded = stdout_line.decode()
-					#print(line_decoded, end='')
 					self._stdout_text += line_decoded  # save the output in an internal variable
-					if self._rdy_event.is_set() is False and app_ready_stdout_signal in line_decoded:  # check for the "ready signal"
-						self._rdy_event.set()  # set the application ready
+
+					if self._ready_event.is_set() is False and "BUILD FAILURE" in line_decoded:  # check for the "BUILD FAILURE"
+						self._is_build_failure = True
+
+					if self._ready_event.is_set() is False and app_ready_stdout_signal in line_decoded:  # check for the "ready signal"
+						self._ready_event.set()  # set the application ready
+
+					if self._shutdown_event.is_set() is False and "Shutdown completed" in line_decoded:
+						self._shutdown_event.set()
 
 	def run_async(self):
 		self._event_loop.run_in_executor(None, self.run_sync)  # use a separated thread
 
-	def wait_until_ready(self):
-		return self._rdy_event.wait(60)
+	def wait_until_ready(self, timeout_seconds=60):
+		return self._ready_event.wait(timeout_seconds)
 
-	def stop(self):
-		if self.is_running():
+	def stop_and_reset(self):
+		if self._proc is not None:
 			os.killpg(os.getpgid(self._proc.pid), SIGTERM)
+
 			self._proc = None
-			self._rdy_event.clear()
+			self._ready_event.clear()
+			self._shutdown_event.clear()
+			self._is_build_failure = False
 
 			# cancel the task in the event loop
 			tasks = asyncio.all_tasks(self._event_loop)
 			for t in tasks:
 				t.cancel()
 
+			self._shutdown_event.wait(5)
 			print("Mutated application stopped")
-		else:
-			print("Mutated application not running")
 
 		stdout_text = self._stdout_text  # reset and return the registered output of the app
 		self._stdout_text = ""
@@ -73,14 +83,15 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 		if command_app_reset:
 			subprocess.Popen([command_app_reset], cwd=app_root_dir, shell=True)  # reset the application
 			print("Application reset")
-		# else:
-		# 	raise RuntimeError("No command to reset application is found: add the reset command in the configuration")
 
 	def get_output(self):
 		return self._stdout_text
+
+	def is_build_failure(self):
+		return self._is_build_failure
 
 	def is_running(self):
 		return self._proc is not None
 
 	def is_ready(self):
-		return self.is_running() and self._rdy_event.is_set()
+		return self.is_running() and self._ready_event.is_set() and not self.is_build_failure()
