@@ -86,7 +86,7 @@ def _insert_print_for_coverage(file_path_to_change, mut_info):
 	remove_file(tmp_file_to_change)
 
 
-def revert_proj_to_orig():
+def revert_project_to_orig():
 	for source_path in source_paths:
 		for subdir, dirs, files in os.walk(source_path):
 			for f in files:
@@ -99,8 +99,9 @@ def revert_proj_to_orig():
 def revert_sourcefile_to_orig(mutation_info):
 	mutated_file = get_source_file_path(mutation_info)
 	backup_file = mutated_file + backup_ext
-	copyfile(backup_file, mutated_file)
-	os.remove(backup_file)
+	if os.path.isfile(backup_file):
+		copyfile(backup_file, mutated_file)
+		os.remove(backup_file)
 
 
 def mutate_code(mutator_info):

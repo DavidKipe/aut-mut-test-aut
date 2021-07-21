@@ -17,9 +17,10 @@ mutants_dir = 'mutants'             # directory name where the mutated files wil
 
 command_path_run = 'sm-shop'    # path relative for the run command
 command_app_run = 'mvn spring-boot:run -B'  # command to run application
-app_ready_stdout_signal = "Started ShopApplication in"         # what the application write on stdout when is ready
+app_ready_stdout_signal = "Started ShopApplication in"  # what the application write on stdout when is ready
+app_shutdown_stdout_signal = "Shutdown completed"       # what the application write on shutdown completed
 
-command_app_reset = 'git checkout -- sm-shop/SALESMANAGER.h2.db sm-shop/files/store/DownlaodRepository.dat'     # this command will be run to reset the app to the initial state (optional)
+command_app_reset = 'git checkout -- sm-shop/SALESMANAGER.h2.db sm-shop/SALESMANAGER.trace.db sm-shop/files/store/DownlaodRepository.dat'     # this command will be run to reset the app to the initial state (optional)
 #  #
 
 # Mutation info # (path relative to root of this tool)

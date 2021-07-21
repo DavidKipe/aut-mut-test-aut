@@ -35,20 +35,19 @@ class MutatedAppManager(metaclass=MutatedAppManagerSingleton):
 			print("Mutated application already running")
 		else:
 			print("Running mutated application...")
-			self._proc = subprocess.Popen([command_app_run], cwd=self._run_path, shell=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # run the application
+			self._proc = subprocess.Popen([command_app_run], cwd=self._run_path, shell=True, text=True, preexec_fn=os.setsid, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)  # run the application
 
 			with self._proc.stdout as stdout:  # capture the output
 				for stdout_line in stdout:
-					line_decoded = stdout_line.decode()
-					self._stdout_text += line_decoded  # save the output in an internal variable
+					self._stdout_text += stdout_line  # save the output in an internal variable
 
-					if self._ready_event.is_set() is False and "BUILD FAILURE" in line_decoded:  # check for the "BUILD FAILURE"
+					if self._ready_event.is_set() is False and "BUILD FAILURE" in stdout_line:  # check for the "BUILD FAILURE"
 						self._is_build_failure = True
 
-					if self._ready_event.is_set() is False and app_ready_stdout_signal in line_decoded:  # check for the "ready signal"
+					if self._ready_event.is_set() is False and app_ready_stdout_signal in stdout_line:  # check for the "ready signal" and send the event
 						self._ready_event.set()  # set the application ready
 
-					if self._shutdown_event.is_set() is False and "Shutdown completed" in line_decoded:
+					if self._shutdown_event.is_set() is False and app_shutdown_stdout_signal in stdout_line:  # send the shutdown event
 						self._shutdown_event.set()
 
 	def run_async(self):

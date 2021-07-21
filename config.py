@@ -9,7 +9,7 @@ from configurations.shopizer import *
 
 logged = False
 if not logged:
-	print("Running with configuration:", config_name)
+	print(f"Running with configuration: {config_name}\n")
 	logged = True
 
 source_paths = [join(app_root_dir, src_path) for src_path in source_paths]

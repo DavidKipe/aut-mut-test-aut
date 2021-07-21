@@ -21,12 +21,14 @@ class CSVTotalResultWriter:
 	def __init_overall(self):  # create (overwrite if exists) the 'results.csv' file and write the columns header
 		header_row = [  # for the MutationInfo
 			'Mutant ID',
+			'Master ID',
 			'Source file relative path',
 			'Source file name',
 			'Line number',
 			'Mutator type tag',
 			'Original line',
-			'Mutated line'
+			'Mutated line',
+			'Mutated app error'
 		]
 
 		header_row += [  # for the MutationTestsResult, one for each test suite
@@ -45,12 +47,14 @@ class CSVTotalResultWriter:
 	def __init_detail_for(self, mut_result):
 		header_row = [  # for the MutationInfo (without test suite tag)
 			'Mutant ID',
+			'Master ID',
 			'Source file relative path',
 			'Source file name',
 			'Line number',
 			'Mutator type tag',
 			'Original line',
 			'Mutated line',
+			'Mutated app error',
 			'Test suite success',
 			'Total tests',
 			'Passed tests',
@@ -72,25 +76,30 @@ class CSVTotalResultWriter:
 
 		row_list = [
 			mutation_info.id,
+			mutation_info.master_id,
 			mutation_info.rel_folder_path,
 			mutation_info.source_filename,
 			mutation_info.line_number,
 			mutation_info.mutator_type.name,
 			mutation_info.original_line,
-			mutation_info.mutated_line
+			mutation_info.mutated_line,
+			mutation_info.app_mutated_error.name
 		]
 
-		for mut_result in mutation_info.mutation_results:
-			row_list += [
-				mut_result.test_suite_tag,
-				mut_result.success,
-				mut_result.total_tests,
-				mut_result.passed_tests,
-				mut_result.failed_tests,
-				mut_result.error_tests,
-				mut_result.skipped_tests,
-				round(mut_result.time_sec, 3)
-			]
+		try:  # mutation result could be 'None' if the mutated app has had error
+			for mut_result in mutation_info.mutation_results:
+				row_list += [
+					mut_result.test_suite_tag,
+					mut_result.success,
+					mut_result.total_tests,
+					mut_result.passed_tests,
+					mut_result.failed_tests,
+					mut_result.error_tests,
+					mut_result.skipped_tests,
+					round(mut_result.time_sec, 3)
+				]
+		except AttributeError:
+			pass
 
 		self.__write_csv_row(self._OVERALL_RESULT_TAG, row_list)
 
@@ -102,24 +111,33 @@ class CSVTotalResultWriter:
 
 		row_list = [  # base info
 			mutation_info.id,
+			mutation_info.master_id,
+			mutation_info.master_id,
 			mutation_info.rel_folder_path,
 			mutation_info.source_filename,
 			mutation_info.line_number,
 			mutation_info.mutator_type.name,
 			mutation_info.original_line,
 			mutation_info.mutated_line,
-			mutation_result.success,
-			mutation_result.total_tests,
-			mutation_result.passed_tests,
-			mutation_result.failed_tests,
-			mutation_result.error_tests,
-			mutation_result.skipped_tests,
-			mutation_result.time_sec
+			mutation_info.app_mutated_error.name
 		]
 
-		mutation_result.sort_detailed_test_results()
-		for test_result in mutation_result.detailed_test_results:  # write info about test cases
-			row_list.append(test_result.status.name)
+		try:  # mutation result could be 'None' if the mutated app has had error
+			row_list.extend([
+				mutation_result.success,
+				mutation_result.total_tests,
+				mutation_result.passed_tests,
+				mutation_result.failed_tests,
+				mutation_result.error_tests,
+				mutation_result.skipped_tests,
+				round(mutation_result.time_sec, 3)
+			])
+
+			mutation_result.sort_detailed_test_results()
+			for test_result in mutation_result.detailed_test_results:  # write info about test cases
+				row_list.append(test_result.status.name)
+		except AttributeError:
+			pass
 
 		self.__write_csv_row(testsuite_tag, row_list)
 

@@ -79,6 +79,12 @@ class TestStatus(Enum):
 	ERROR = 2
 
 
+class AppError(Enum):
+	NONE = 0
+	START_TIMED_OUT = 1
+	BUILD_ERROR = 2
+
+
 @dataclass
 class TestResult:
 	name: str
@@ -154,6 +160,7 @@ class MutationInfo:
 	master_id: int = None  # optional
 	method_name: str = ''  # optional
 	mutation_results: List[MutationTestsResult] = field(default_factory=list)  # optional
+	app_mutated_error: AppError = AppError.NONE  # optional (value NONE and None will treated as void)
 
 	def add_result(self, mut_result):
 		self.mutation_results.append(mut_result)
@@ -179,6 +186,9 @@ class MutationInfo:
 		if self.method_name:
 			mut_info_dict['methodName'] = self.method_name
 
+		if self.app_mutated_error is not None and self.app_mutated_error != AppError.NONE:
+			mut_info_dict['applicationMutatedError'] = self.app_mutated_error.name
+
 		if self.mutation_results:  # if results exist then copy them into dict
 			mut_result_dicts = list()
 			for mut_result in self.mutation_results:
@@ -191,6 +201,9 @@ class MutationInfo:
 		return self.rel_folder_path == other_mut_info.rel_folder_path and \
 			self.source_filename == other_mut_info.source_filename and \
 			self.line_number == other_mut_info.line_number
+
+	def has_app_mutated_error(self):
+		return self.app_mutated_error is not None and self.app_mutated_error != AppError.NONE
 
 	def short_print(self):
 		print(f"id: {self.id}")
@@ -211,6 +224,20 @@ def from_dict_to_mut_info(mut_info_dict):
 	mutation_info.original_line =	mut_info_dict['originalLine']
 	mutation_info.mutated_line =	mut_info_dict['mutatedLine']
 	mutation_info.mutator_type =	MutatorType[mut_info_dict['mutatorTag']]
-	mutation_info.master_id =       mut_info_dict['MasterID']
-	mutation_info.method_name =     mut_info_dict['methodName']
+
+	try:  # optional values
+		mutation_info.master_id = mut_info_dict['MasterID']
+	except KeyError:
+		pass
+
+	try:
+		mutation_info.method_name = mut_info_dict['methodName']
+	except KeyError:
+		pass
+
+	try:
+		mutation_info.app_mutated_error = mut_info_dict['applicationMutatedError']
+	except KeyError:
+		pass
+
 	return mutation_info
