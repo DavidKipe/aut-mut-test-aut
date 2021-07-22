@@ -46,21 +46,24 @@ async def main():
 			for testsuite_tag in test_suite_manager.get_test_suite_tags():  # for each test suite, run the mutated app and then the test suite
 				mutated_app_manager.run_async()  # run the application mutated
 
-				start_wait = mutated_app_manager.wait_until_ready()  # wait until application is ready to use
+				start_wait_timed_out = mutated_app_manager.wait_until_ready()  # wait until application is ready to use
 
-				if not start_wait:  # if the start time is timed out something wrong happened
+				if not start_wait_timed_out:  # if the start time is timed out something wrong happened
 					if mutated_app_manager.is_build_failure():
 						print("[ERROR] Mutated application not running (BUILD FAILURE)")
 						mut_info.app_mutated_error = AppError.BUILD_ERROR
 					else:
-						print("[ERROR] Mutated application not running (timeout)")
+						print("[ERROR] Mutated application not running (TIMED OUT)")
 						mut_info.app_mutated_error = AppError.START_TIMED_OUT
 				else:
 					test_suite_manager.run_test_suite(testsuite_tag, mut_info, execution_tag)  # run the test suite and save the result
 
 				output = mutated_app_manager.stop_and_reset()  # close mutated application and get the output
-				mutated_app_manager.reset_application_state()
-				save_app_output(mut_info.id, execution_tag, testsuite_tag, output)  # save output
+				mutated_app_manager.reset_application_state()  # reset the application state to a clean state
+
+				if start_wait_timed_out:  # save the mutated application output only if a problem was encountered
+					save_app_output(mut_info.id, execution_tag, testsuite_tag, output)
+
 				csv_result_writer.append_detail_result_for(testsuite_tag, mut_info)  # save in the CSV file a line with a detailed result about test cases
 
 			save_mut_info(mut_info, execution_tag)  # save JSON with all the info about this mutant
@@ -70,8 +73,7 @@ async def main():
 			revert_sourcefile_to_orig(mut_info)  # revert sourcecode to original, whether the execution was ok or threw an exception
 			mutated_app_manager.stop_and_reset()  # if the app still running, try to stop it
 
-			print(f"Mutation: {mut_info.id} DONE")
-			print()
+			print(f"Mutation: {mut_info.id} DONE\n")
 
 
 if __name__ == '__main__':
