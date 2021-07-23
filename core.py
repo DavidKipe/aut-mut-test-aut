@@ -32,12 +32,12 @@ async def main():
 
 	mutated_app_manager.reset_application_state()  # ensure to reset the application state before the first mutation
 
-	for mut_info in mutations_info[10:]:  # for each mutant
+	for i, mut_info in enumerate(mutations_info):  # for each mutant
 
 		if mut_info.id in mutants_to_skip:  # check if this mutant must be skipped
 			continue
 
-		print(f"Mutant: {mut_info.id} (MasterID: {mut_info.master_id})")
+		print(f"[Counter: {i}] Mutant ID: {mut_info.id} ('MasterID': {mut_info.master_id})")
 
 		try:
 			mutate_code(mut_info)  # run the mutator
@@ -46,25 +46,27 @@ async def main():
 			for testsuite_tag in test_suite_manager.get_test_suite_tags():  # for each test suite, run the mutated app and then the test suite
 				mutated_app_manager.run_async()  # run the application mutated
 
-				start_wait_timed_out = mutated_app_manager.wait_until_ready()  # wait until application is ready to use
+				start_wait_ended_successfully = mutated_app_manager.wait_until_ready()  # wait until application is ready to use
 
-				if not start_wait_timed_out:  # if the start time is timed out something wrong happened
+				if not start_wait_ended_successfully:  # if the start time is timed out something wrong happened
 					if mutated_app_manager.is_build_failure():
 						print("[ERROR] Mutated application not running (BUILD FAILURE)")
 						mut_info.app_mutated_error = AppError.BUILD_ERROR
 					else:
 						print("[ERROR] Mutated application not running (TIMED OUT)")
 						mut_info.app_mutated_error = AppError.START_TIMED_OUT
-				else:
+
+				if start_wait_ended_successfully or i == 0:  # if this is the first mutation, then run test suite anyway to get the information about the column names for saving the CSV result
 					test_suite_manager.run_test_suite(testsuite_tag, mut_info, execution_tag)  # run the test suite and save the result
+					csv_result_writer.append_detail_result_for(testsuite_tag, mut_info)  # save in the CSV file a line with a detailed result about test cases
 
 				output = mutated_app_manager.stop_and_reset()  # close mutated application and get the output
 				mutated_app_manager.reset_application_state()  # reset the application state to a clean state
 
-				if start_wait_timed_out:  # save the mutated application output only if a problem was encountered
+				if not start_wait_ended_successfully:  # save the mutated application output only if a problem was encountered
 					save_app_output(mut_info.id, execution_tag, testsuite_tag, output)
-
-				csv_result_writer.append_detail_result_for(testsuite_tag, mut_info)  # save in the CSV file a line with a detailed result about test cases
+					if i != 0:  # in the first mutations we need to run all the test suite anyway to get the initial information about column names for CSV result
+						break
 
 			save_mut_info(mut_info, execution_tag)  # save JSON with all the info about this mutant
 			csv_result_writer.append_overall_result(mut_info)  # save all the info about this mutant in a CSV line

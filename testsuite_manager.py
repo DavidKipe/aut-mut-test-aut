@@ -41,7 +41,7 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 				stdout=subprocess.PIPE)
 
 		save_test_suite_output(mutant_id, execution_tag, testsuite_tag, completed_process.stdout)
-		copy_surefire_report(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag)
+		copy_surefire_report_html(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag)
 
 		mut_result = extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, testsuite_name)
 		mutation_info.add_result(mut_result)

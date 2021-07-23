@@ -70,7 +70,7 @@ def save_test_suite_output(mutant_id, execution_tag, testsuite_tag, output_text)
 		f.write(output_text)
 
 
-def copy_surefire_report(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag):
+def copy_surefire_report_html(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag):
 	orig_report = os.path.join(testsuite_rootdir, 'target/site', 'surefire-report.html')
 
 	out_dir = mutant_output_dir(mutant_id, execution_tag)

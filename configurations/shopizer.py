@@ -44,12 +44,12 @@ test_suites = [
 		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
 		'mvn_opts': '-Dtest="assertions.**" -Djava.awt.headless=true'
 	},
-	# {
-	# 	'name': 'ReTest Recheck explicit check',
-	# 	'tag': 'retest_explicit',
-	# 	'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
-	# 	'mvn_opts': '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
-	# },
+	{
+		'name': 'ReTest Recheck explicit check',
+		'tag': 'retest_explicit',
+		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
+		'mvn_opts': '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
+	},
 	# {
 	# 	'name': 'ReTest Recheck implicit check',
 	# 	'tag': 'retest_implicit',

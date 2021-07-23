@@ -40,7 +40,7 @@ class CSVTotalResultWriter:
 			'Error tests',
 			'Skipped tests',
 			'Total execution time (sec)',
-		] * len(self._map_out_file)
+		] * (len(self._map_out_file) - 1)
 
 		self.__write_csv_row(self._OVERALL_RESULT_TAG, header_row, is_header=True)
 
@@ -111,7 +111,6 @@ class CSVTotalResultWriter:
 
 		row_list = [  # base info
 			mutation_info.id,
-			mutation_info.master_id,
 			mutation_info.master_id,
 			mutation_info.rel_folder_path,
 			mutation_info.source_filename,
