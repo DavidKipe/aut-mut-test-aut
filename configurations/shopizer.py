@@ -6,9 +6,9 @@ config_name = "Shopizer"
 # Application (SUT) config #
 app_root_dir = '/home/david/IdeaProjects/shopizer-mutations'    # root directory of the application
 
-backup_ext = '.bak'						# this string will be appened to the original filename
-orig_line_tag = ' // original line'		# this string will be appened to the original commented line
-mutate_line_tag = ' // mutated line'    # this string will be appened to the mutated line
+backup_ext = '.bak'						# this string will be appended to the original filename
+orig_line_tag = ' // original line'		# this string will be appended to the original commented line
+mutate_line_tag = ' // mutated line'    # this string will be appended to the mutated line
 indentation_format = '\t'				# could be either '\t' (tab) or ' ' (*one* space)
 
 source_paths = ['sm-core/src/main/java', 'sm-core-model/src/main/java', 'sm-core-modules/src/main/java', 'sm-shop/src/main/java', 'sm-shop-model/src/main/java']  # directories of the source code in the app root dir

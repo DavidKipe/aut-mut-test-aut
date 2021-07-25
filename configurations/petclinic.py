@@ -6,9 +6,9 @@ config_name = "SpringBoot PetClinic"
 # Application (SUT) config #
 app_root_dir = '/home/david/IdeaProjects/spring-petclinic-mutation'    # root directory of the application (all paths of app are relative to this)
 
-backup_ext = '.bak'						# this string will be appened to the original filename
-orig_line_tag = ' // original line'		# this string will be appened to the original commented line
-mutate_line_tag = ' // mutated line'    # this string will be appened to the mutated line
+backup_ext = '.bak'						# this string will be appended to the original filename
+orig_line_tag = ' // original line'		# this string will be appended to the original commented line
+mutate_line_tag = ' // mutated line'    # this string will be appended to the mutated line
 indentation_format = '\t'				# could be either '\t' (tab) or ' ' (*one* space)
 
 source_paths = ['src/main/java']    # directories of the source code in the app root dir
@@ -18,6 +18,7 @@ mutants_dir = 'mutants'             # directory name where the mutated files wil
 command_path_run = ''    # path relative for the run command (optional)
 command_app_run = 'mvn spring-javaformat:apply spring-boot:run -B'  # command to run application
 app_ready_stdout_signal = "Started PetClinicApplication in"         # what the application write on stdout when is ready
+app_shutdown_stdout_signal = "Shutdown completed"                   # what the application write on shutdown completed
 
 # command_app_reset = ''     # this command will be run to reset the app to the initial state (optional)
 #  #
