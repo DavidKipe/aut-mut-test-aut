@@ -29,19 +29,9 @@ List of Mutant descriptions from [Pitest](https://github.com/hcoles/pitest) tool
 After elaborating the Pitest mutations and creating the actual mutations
 
 #### Core loop (pseudocode)
-```
-Foreach Mutant:
-  Mutate Application Under Test with Mutant [Mutator]
-  Foreach Test Suite:
-    Run Application Under Test (mutated) [Mutated Application Manager]
-    Run Test Suite [Test Suite Manager]
-    Save All the results [Result Extractor] [CSV Result Writer]
-    Stop Application Under Test (mutated) [Mutated Application Manager]
-    Reset Application Under Test Status [Mutated Application Manager]
-  Save Overall result about current mutation [CSV Result Writer]
-  Revert Application Under Test to Original (remove Mutant) [Mutator]
-```
-_Between brackets [] is the tool that contains the specific operation_
+![Main Operation](https://i.ibb.co/Pm2jzG8/Aut-Mut-Test-Aut-Main-operation.png)
+
+_the various tools or modules involved are highlighted_
 
 #### Output
 All the information about the results of the test suite runs on the mutated application under test
