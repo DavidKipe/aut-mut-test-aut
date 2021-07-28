@@ -20,7 +20,8 @@ _**Note**: This application does not create code mutation from scratch. It uses 
 - **Mutation Coverage with prints:** This procedure is very similar to the one that applies the mutant in the source code, but instead of inserting a mutation, it puts a print instruction with the ID of the mutant. With these “mutations”, we can analyze the coverage of the mutations inserted running normally the application under test.
 
 ## Goal of the application
-The ultimate goal of this application is helping in my thesis project to compare two different test methodologies. The goal is to analyze the efficacy to kill the mutants and so to find out bugs in web applications.
+ 
+The ultimate goal of this application is to help in my thesis project by comparing two different test methodologies in order to analyze the efficacy of mutant killing and find out bugs in web applications.
 
 ## Main operation description
 #### Input
