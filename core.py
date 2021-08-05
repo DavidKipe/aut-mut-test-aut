@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import asyncio
+import time
 from datetime import datetime
 
 from csv_result_writer import CSVTotalResultWriter
@@ -10,21 +11,24 @@ from mutation_selector import selector_max_mutants_per_method
 from mutator import *
 from testsuite_manager import TestSuiteManager
 
-# TODO change prints to logging
+
+# This main represents the "main operation" of the application
 
 
 async def main():
-	time = datetime.now().strftime("%Y%m%d-%H%M%S")
-	print(f"Starting time: {time}\n")
-	execution_tag = time  # tag of this execution (it is the name of the output directory)
+	time_str = datetime.now().strftime("%Y%m%d-%H%M%S")
+	print(f"Starting time: {time_str}\n")
+	execution_tag = time_str  # tag of this execution (it is the name of the output directory)
 
 	revert_project_to_orig()  # ensure the project to be original at the beginning
-	#map_mut_counters = create_mut_infos_json_from_pit_xml()  # convert the XML mutations info of PIT in our JSON format (it needs a clean app project, not mutated app)
-	#print("\n > Mutations created:\n" + json.dumps(map_mut_counters, indent=2))  # print out the mutations creation result
+	# map_mut_counters = create_mut_infos_json_from_pit_xml()  # convert the XML mutations info of PIT in our JSON format (it needs a clean app project, not mutated app)
+	# print("\n > Mutations created:\n" + json.dumps(map_mut_counters, indent=2))  # print out the mutations creation result
 
 	output_file_mutants_selected = 'resources/shopizer_selected_mutations_max3.json'
-	# selector_max_mutants_per_method(output_mut_infos_json_filename, output_file_mutants_selected, 2)
-	mutations_info = read_mut_infos_from_file(output_file_mutants_selected)  # read the info about mutations
+	# selector_max_mutants_per_method(output_mut_infos_json_filename, output_file_mutants_selected, 3)
+
+	file_mutants_to_be_read = output_file_mutants_selected
+	mutations_info = read_mut_infos_from_file(file_mutants_to_be_read)  # read the info about mutations
 
 	mutated_app_manager = MutatedAppManager()
 	test_suite_manager = TestSuiteManager()
@@ -41,7 +45,6 @@ async def main():
 
 		try:
 			mutate_code(mut_info)  # run the mutator
-			#insert_print_for_mutation_coverage(mut_info)
 
 			for testsuite_tag in test_suite_manager.get_test_suite_tags():  # for each test suite, run the mutated app and then the test suite
 				mutated_app_manager.run_async()  # run the application mutated
