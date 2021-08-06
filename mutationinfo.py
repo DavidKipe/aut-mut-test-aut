@@ -119,6 +119,9 @@ class MutationTestsResult:
 	detailed_test_results: List[TestResult] = field(default_factory=list)  # optional
 
 	def add_test_result(self, test_result):
+		tr = next((tr for tr in self.detailed_test_results if tr.name == test_result.name), None)
+		if tr is not None:
+			self.detailed_test_results.remove(tr)
 		self.detailed_test_results.append(test_result)
 
 	def sort_detailed_test_results(self):
@@ -163,7 +166,20 @@ class MutationInfo:
 	app_mutated_error: AppError = AppError.NONE  # optional (value NONE and None will treated as void)
 
 	def add_result(self, mut_result):
-		self.mutation_results.append(mut_result)
+		mr = next((mr for mr in self.mutation_results if mr.test_suite_tag == mut_result.test_suite_tag), None)
+		if mr is not None:
+			mr.success = mr.success and mut_result.success
+			mr.total_tests += mut_result.total_tests
+			mr.passed_tests += mut_result.passed_tests
+			mr.failed_tests += mut_result.failed_tests
+			mr.error_tests += mut_result.error_tests
+			mr.skipped_tests += mut_result.skipped_tests
+			mr.time_sec += mut_result.time_sec
+
+			for tr in mut_result.detailed_test_results:
+				mr.add_test_result(tr)
+		else:
+			self.mutation_results.append(mut_result)
 
 	def get_mutation_result_of(self, testsuite_tag):
 		return next((mut_result for mut_result in self.mutation_results if mut_result.test_suite_tag == testsuite_tag), None)

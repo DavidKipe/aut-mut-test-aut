@@ -38,17 +38,26 @@ mutants_to_skip = []    # list of ids of the mutants to be skipped
 # mvn_opts: options to insert in the Maven command
 #   command = 'mvn {mvn_opts} surefire-report:report test -B'
 test_suites = [
+	# {
+	# 	'name': 'Selenium assertions',
+	# 	'tag': 'assertions',
+	# 	'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
+	# 	'mvn_opts': '-Dtest="assertions.**" -Djava.awt.headless=true'
+	# },
+	# {
+	# 	'name': 'ReTest Recheck explicit check',
+	# 	'tag': 'retest_explicit',
+	# 	'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
+	# 	'mvn_opts': '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
+	# },
 	{
-		'name': 'Selenium assertions',
-		'tag': 'assertions',
+		'name': 'ReTest Recheck implicit check',
+		'tag': 'retest_implicit',
 		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
-		'mvn_opts': '-Dtest="assertions.**" -Djava.awt.headless=true'
-	},
-	{
-		'name': 'ReTest Recheck explicit check',
-		'tag': 'retest_explicit',
-		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
-		'mvn_opts': '-Dtest="recheck.explicit.**" -Djava.awt.headless=true'
+		'mvn_opts': [
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyLastName" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyFirstName" -Djava.awt.headless=true'
+		]
 	},
 	# {
 	# 	'name': 'ReTest Recheck implicit check',

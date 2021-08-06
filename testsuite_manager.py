@@ -25,10 +25,14 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 		return self._map_testsuite_info.keys()
 
 	@staticmethod
+	def get_test_suite_names():
+		return [ts.get('name') for ts in test_suites]
+
+	@staticmethod
 	def __run_test_suite(mutation_info, execution_tag, testsuite_rootdir, testsuite_mvn_opts, testsuite_name, testsuite_tag):
 		mutant_id = mutation_info.id
 
-		print("[Mutant id: {}] Running test suite '{}' ...".format(mutant_id, testsuite_name))
+		print(f"Run test '{testsuite_mvn_opts}'")
 
 		clear_surefire_reports(testsuite_rootdir)
 
@@ -49,7 +53,28 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 		print("[Mutant id: {}] Test suite '{}' has finished computation".format(mutant_id, testsuite_name))
 		# TODO print method for MutationTestsResult
 
+	@staticmethod
+	def __run_test_suite_void_wa(mutation_info, execution_tag, testsuite_rootdir, testsuite_mvn_opts, testsuite_name, testsuite_tag):
+		mutant_id = mutation_info.id
+
+		clear_surefire_reports(testsuite_rootdir)
+
+		opt_report_title = '-Dsurefire.report.title="Surefire report. Test suite: {}, Mutant id: {}"'.format(testsuite_tag, mutant_id)
+		subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'surefire:test', '-B']),
+				cwd=testsuite_rootdir,
+				shell=True,
+				encoding='utf-8',
+				stderr=subprocess.STDOUT,
+				stdout=subprocess.PIPE)
+
 	def run_test_suite(self, testsuite_tag, mutation_info, execution_tag):
 		test_suite = self._map_testsuite_info[testsuite_tag]
 		self.__run_test_suite(mutation_info, execution_tag, test_suite['root_dir'], test_suite['mvn_opts'], test_suite['name'], testsuite_tag)
+
+	def run_test_suite_workaround(self, testsuite_tag, mutation_info, execution_tag):
+		test_suite = self._map_testsuite_info[testsuite_tag]
+		print("[Mutant id: {}] Running test suite '{}' ...".format(mutation_info.id, test_suite['name']))
+		for mvn_opts in test_suite['mvn_opts']:
+			self.__run_test_suite_void_wa(mutation_info, execution_tag, test_suite['root_dir'], mvn_opts, test_suite['name'], testsuite_tag)
+			self.__run_test_suite(mutation_info, execution_tag, test_suite['root_dir'], mvn_opts, test_suite['name'], testsuite_tag)
 
