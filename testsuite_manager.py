@@ -1,3 +1,4 @@
+import re
 import subprocess
 
 from utils import *
@@ -32,40 +33,50 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 	def __run_test_suite(mutation_info, execution_tag, testsuite_rootdir, testsuite_mvn_opts, testsuite_name, testsuite_tag):
 		mutant_id = mutation_info.id
 
-		print(f"Run test '{testsuite_mvn_opts}'")
+		test_name_search = re.search(r'-Dtest=".+#(\w+)', testsuite_mvn_opts)
+		test_name = ""
+		if test_name_search:
+			test_name = test_name_search.group(1)
+			print(f"Run test '{test_name}'")
 
 		clear_surefire_reports(testsuite_rootdir)
 
 		opt_report_title = '-Dsurefire.report.title="Surefire report. Test suite: {}, Mutant id: {}"'.format(testsuite_tag, mutant_id)
-		completed_process = subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'surefire:test', '-B']),
-				cwd=testsuite_rootdir,
-				shell=True,
-				encoding='utf-8',
-				stderr=subprocess.STDOUT,
-				stdout=subprocess.PIPE)
+		completed_process = None
+		for i in range(10):
+			completed_process = subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'surefire:test', '-B']),
+					cwd=testsuite_rootdir,
+					shell=True,
+					encoding='utf-8',
+					stderr=subprocess.STDOUT,
+					stdout=subprocess.PIPE)
 
-		save_test_suite_output(mutant_id, execution_tag, testsuite_tag, completed_process.stdout)
-		copy_surefire_report_html(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag)
+			if "No last expected state to find old element in!" not in completed_process.stdout:
+				break
+
+		# copy_surefire_report_html(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag)
 
 		mut_result = extract_results_from_surefire_reports(testsuite_rootdir, testsuite_tag, testsuite_name)
 		mutation_info.add_result(mut_result)
-
-		print("[Mutant id: {}] Test suite '{}' has finished computation".format(mutant_id, testsuite_name))
-		# TODO print method for MutationTestsResult
+		if not mut_result.success:
+			save_test_suite_output(mutant_id, execution_tag, f"FAILED-{test_name}", completed_process.stdout)
 
 	@staticmethod
-	def __run_test_suite_void_wa(mutation_info, execution_tag, testsuite_rootdir, testsuite_mvn_opts, testsuite_name, testsuite_tag):
-		mutant_id = mutation_info.id
-
+	def __run_test_suite_void_wa(testsuite_rootdir, testsuite_mvn_opts, testsuite_tag):
 		clear_surefire_reports(testsuite_rootdir)
 
-		opt_report_title = '-Dsurefire.report.title="Surefire report. Test suite: {}, Mutant id: {}"'.format(testsuite_tag, mutant_id)
-		subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'surefire:test', '-B']),
-				cwd=testsuite_rootdir,
-				shell=True,
-				encoding='utf-8',
-				stderr=subprocess.STDOUT,
-				stdout=subprocess.PIPE)
+		opt_report_title = '-Dsurefire.report.title="Surefire report. Test suite: {}"'.format(testsuite_tag)
+		completed_process = None
+		for i in range(10):
+			completed_process = subprocess.run(' '.join(['mvn', testsuite_mvn_opts, 'surefire-report:report', opt_report_title, 'surefire:test', '-B']),
+					cwd=testsuite_rootdir,
+					shell=True,
+					encoding='utf-8',
+					stderr=subprocess.STDOUT,
+					stdout=subprocess.PIPE)
+
+			if "No last expected state to find old element in!" not in completed_process.stdout:
+				break
 
 	def run_test_suite(self, testsuite_tag, mutation_info, execution_tag):
 		test_suite = self._map_testsuite_info[testsuite_tag]
@@ -73,8 +84,10 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 
 	def run_test_suite_workaround(self, testsuite_tag, mutation_info, execution_tag):
 		test_suite = self._map_testsuite_info[testsuite_tag]
-		print("[Mutant id: {}] Running test suite '{}' ...".format(mutation_info.id, test_suite['name']))
 		for mvn_opts in test_suite['mvn_opts']:
-			self.__run_test_suite_void_wa(mutation_info, execution_tag, test_suite['root_dir'], mvn_opts, test_suite['name'], testsuite_tag)
 			self.__run_test_suite(mutation_info, execution_tag, test_suite['root_dir'], mvn_opts, test_suite['name'], testsuite_tag)
 
+	def run_test_suite_wa_create_golden_master(self, testsuite_tag):
+		test_suite = self._map_testsuite_info[testsuite_tag]
+		for mvn_opts in test_suite['mvn_opts']:
+			self.__run_test_suite_void_wa(test_suite['root_dir'], mvn_opts, testsuite_tag)

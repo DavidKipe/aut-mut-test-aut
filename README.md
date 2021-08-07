@@ -1,6 +1,11 @@
 # AutMutTestAut
 ### Automatic Mutations for Test Automation
 
+### _Branch Note_
+_This branch is a workaround to resolve the problem encountered with Rechek implicit and Shopizer application. The error raised is "No last expected state to find old element in!"._
+
+_It basically consists in execute each test singularly (and re-execute them if the error above is raised)_
+
 ## Overview
 This Python application is actually a set of tools that automates the source code mutation of a Java application under test, consequently automates the execution of test suites on mutated application and retrieves all the results
 
