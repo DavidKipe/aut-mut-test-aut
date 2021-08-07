@@ -56,7 +56,13 @@ test_suites = [
 		'root_dir': '/home/david/IdeaProjects/shopizer-test-suite',
 		'mvn_opts': [
 			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyLastName" -Djava.awt.headless=true',
-			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyFirstName" -Djava.awt.headless=true'
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyFirstName" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyEmail" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyPassword" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyRepeatPassword" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterWithPasswordMismatch" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithValidData" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterDuplicateMember" -Djava.awt.headless=true'
 		]
 	},
 	# {

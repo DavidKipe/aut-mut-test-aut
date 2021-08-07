@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 
 import asyncio
-import time
 from datetime import datetime
 
 from csv_result_writer import CSVTotalResultWriter
 from mutated_app_manager import MutatedAppManager
-from mutation_creator import create_mut_infos_json_from_pit_xml
-from mutation_selector import selector_max_mutants_per_method
 from mutator import *
 from testsuite_manager import TestSuiteManager
 
 
-# This main represents the "main operation" of the application
+# This main represents the "main operation" for the workaround to resolve the problem faced with the test suite Recheck implicit with Shopizer
+# The workaround basically consists in execute each test singularly
 
 
 async def main():
@@ -21,11 +19,8 @@ async def main():
 	execution_tag = time_str  # tag of this execution (it is the name of the output directory)
 
 	revert_project_to_orig()  # ensure the project to be original at the beginning
-	# map_mut_counters = create_mut_infos_json_from_pit_xml()  # convert the XML mutations info of PIT in our JSON format (it needs a clean app project, not mutated app)
-	# print("\n > Mutations created:\n" + json.dumps(map_mut_counters, indent=2))  # print out the mutations creation result
 
 	output_file_mutants_selected = 'resources/shopizer_selected_mutations_max3.json'
-	# selector_max_mutants_per_method(output_mut_infos_json_filename, output_file_mutants_selected, 3)
 
 	file_mutants_to_be_read = output_file_mutants_selected
 	mutations_info = read_mut_infos_from_file(file_mutants_to_be_read)  # read the info about mutations
@@ -41,9 +36,7 @@ async def main():
 		# if i < 450 or i >= 500:
 		# 	continue
 
-		if mut_info.id != 106 and \
-				mut_info.id != 110 and \
-				mut_info.id != 700:
+		if mut_info.id != 700:
 			continue
 
 		if mut_info.id in mutants_to_skip:  # check if this mutant must be skipped
@@ -68,6 +61,7 @@ async def main():
 						mut_info.app_mutated_error = AppError.START_TIMED_OUT
 
 				if start_wait_ended_successfully or i == 0:  # if this is the first mutation, then run test suite anyway to get the information about the column names for saving the CSV result
+					print("[Mutant id: {}] Running test suite '{}' ...".format(mut_info.id, testsuite_tag))
 					test_suite_manager.run_test_suite_workaround(testsuite_tag, mut_info, execution_tag)  # run the test suite and save the result
 					csv_result_writer.append_detail_result_for(testsuite_tag, mut_info)  # save in the CSV file a line with a detailed result about test cases
 
