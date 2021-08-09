@@ -37,11 +37,13 @@ async def main():
 	mutated_app_manager.reset_application_state()  # ensure to reset the application state before the first mutation
 
 	for i, mut_info in enumerate(mutations_info):  # for each mutant
+		mutation_id = mut_info.id
 
-		if mut_info.id in mutants_to_skip:  # check if this mutant must be skipped
+		if mutation_id in mutants_to_skip:  # check if this mutant must be skipped
+			csv_result_writer.append_only_id(mutation_id)
 			continue
 
-		print(f"[Counter: {i}] Mutant ID: {mut_info.id} ('MasterID': {mut_info.master_id})")
+		print(f"[Counter: {i}] Mutant ID: {mutation_id} ('MasterID': {mut_info.master_id})")
 
 		try:
 			mutate_code(mut_info)  # run the mutator
@@ -67,7 +69,7 @@ async def main():
 				mutated_app_manager.reset_application_state()  # reset the application state to a clean state
 
 				if not start_wait_ended_successfully:  # save the mutated application output only if a problem was encountered
-					save_app_output(mut_info.id, execution_tag, testsuite_tag, output)
+					save_app_output(mutation_id, execution_tag, testsuite_tag, output)
 					if i != 0:  # in the first mutations we need to run all the test suite anyway to get the initial information about column names for CSV result
 						break
 
@@ -78,7 +80,7 @@ async def main():
 			revert_sourcefile_to_orig(mut_info)  # revert sourcecode to original, whether the execution was ok or threw an exception
 			mutated_app_manager.stop_and_reset()  # if the app still running, try to stop it
 
-			print(f"Mutation: {mut_info.id} DONE\n")
+			print(f"Mutation: {mutation_id} DONE\n")
 
 
 if __name__ == '__main__':
