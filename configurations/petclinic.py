@@ -20,14 +20,15 @@ command_app_run = 'mvn spring-javaformat:apply spring-boot:run -B'  # command to
 app_ready_stdout_signal = "Started PetClinicApplication in"         # what the application write on stdout when is ready
 app_shutdown_stdout_signal = "Shutdown completed"                   # what the application write on shutdown completed
 
-# command_app_reset = ''     # this command will be run to reset the app to the initial state (optional)
+command_app_reset = ''     # this command will be run to reset the app to the initial state (optional)
 #  #
 
 # Mutation info # (path relative to root of this tool)
 input_pit_xml_report_filename = 'resources/mutations_petclinic.xml'     # input file from PIT
 output_mut_infos_json_filename = 'resources/mutations_petclinic.json'    # generated file by this tool
 
-mutants_to_skip = [51, 55, 88, 104, 105]    # list of ids of the mutants to be skipped
+mutants_to_skip = [13, 33, 34, 49, 51, 55, 59, 73, 76, 88, 104, 105, 106]    # list of ids of the mutants to be skipped
+
 #  #
 
 # Information about test suites #

@@ -140,6 +140,11 @@ class CSVTotalResultWriter:
 
 		self.__write_csv_row(testsuite_tag, row_list)
 
+	def append_only_id(self, mutation_id):  # append a "placeholder" with only the mutation id in all CSV files (files must be already created)
+		for testsuite_tag, file_path in self._map_out_file.items():
+			if os.path.exists(file_path):  # if file exists
+				self.__write_csv_row(testsuite_tag, [mutation_id])  # append only the first value column of id
+
 	def __write_csv_row(self, file_tag, row_list, is_header=False):
 		with open(self._map_out_file[file_tag], 'w' if is_header else 'a', newline='') as csv_file:
 			csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
