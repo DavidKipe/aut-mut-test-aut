@@ -62,7 +62,59 @@ test_suites = [
 			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithEmptyRepeatPassword" -Djava.awt.headless=true',
 			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterWithPasswordMismatch" -Djava.awt.headless=true',
 			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterMemberWithValidData" -Djava.awt.headless=true',
-			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterDuplicateMember" -Djava.awt.headless=true'
+			'-Dtest="recheck.implicit.A_RegistrationTests#testRegisterDuplicateMember" -Djava.awt.headless=true',
+
+			'-Dtest="recheck.implicit.B_LoginTests#testLoginWithIncorrectEmail" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.B_LoginTests#testLoginWithIncorrectPassword" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.B_LoginTests#testLoginWithEmptyEmail" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.B_LoginTests#testLoginWithEmptyPassword" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.B_LoginTests#testLoginWithValidData" -Djava.awt.headless=true',
+
+			'-Dtest="recheck.implicit.C_ItemsTests#testDisplayItems" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.C_ItemsTests#testDisplayDetailsOfAnItem" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.C_ItemsTests#testFilterItemsByCollection" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.C_ItemsTests#testSortItemsByName" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.C_ItemsTests#testSortItemsByPrice" -Djava.awt.headless=true',
+
+			'-Dtest="recheck.implicit.D_ShoppingCartTests#testAddOneItemToCart" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.D_ShoppingCartTests#testAddTwoDifferentItemsToCart" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.D_ShoppingCartTests#testIncrementQuantityOfAnItemInTheCart" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.D_ShoppingCartTests#testRemoveAnItemFromTheCart" -Djava.awt.headless=true',
+
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithoutAccount" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderStorePickUp" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderDifferentShippingAddress" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithEmptyFirstName" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithEmptyLastName" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithEmptyAddress" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithEmptyCity" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithEmptyPostalCode" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithEmptyEmail" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderWithEmptyPhoneNumber" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderDifferentShippingAddressWithEmptyFirstName" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderDifferentShippingAddressWithEmptyLastName" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderDifferentShippingAddressWithEmptyAddress" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderDifferentShippingAddressWithEmptyCity" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderDifferentShippingAddressWithEmptyPostalCode" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderLoggedIn" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.E_CheckoutTests#testCheckoutOrderCreatingAccountEmptyPassword" -Djava.awt.headless=true',
+
+			'-Dtest="recheck.implicit.F_SubmitOrderTests#testSubmitOrder" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.F_SubmitOrderTests#testSubmitOrderWithInvalidEmail" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.F_SubmitOrderTests#testSubmitOrderLoggedIn" -Djava.awt.headless=true',
+
+			'-Dtest="recheck.implicit.G_ItemReviewTests#testReviewAnItemWithEmptyOpinion" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.G_ItemReviewTests#testReviewAnItemWithEmptyRating" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.G_ItemReviewTests#testReviewAnItem" -Djava.awt.headless=true',
+
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testLogout" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testChangePasswordWithIncorrectPassword" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testChangePasswordWithPasswordMismatch" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testChangePasswordWithShortPassword" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testCorrectnessBillingAddresses" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testEditBillingAddress" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testEditShippingAddress" -Djava.awt.headless=true',
+			'-Dtest="recheck.implicit.H_AccountManagementTests#testChangePassword" -Djava.awt.headless=true'
 		]
 	},
 	# {
