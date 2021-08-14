@@ -40,6 +40,7 @@ async def main():
 		mutation_id = mut_info.id
 
 		if mutation_id in mutants_to_skip:  # check if this mutant must be skipped
+			print(f"Skipped mutation {mutation_id} ('MasterID': {mut_info.master_id})")
 			csv_result_writer.append_only_id(mutation_id)
 			continue
 
