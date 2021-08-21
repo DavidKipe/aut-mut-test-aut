@@ -53,6 +53,9 @@ class TestSuiteManager(metaclass=TestSuiteManagerSingleton):
 
 			if "No last expected state to find old element in!" not in completed_process.stdout:
 				break
+			# else:
+			# 	print(f" >>> No last expected state to find old element in!")
+			# 	save_test_suite_output(mutant_id, execution_tag, f"NoLastExp-{test_name}_(exc {i+1})", completed_process.stdout)
 
 		# copy_surefire_report_html(mutant_id, execution_tag, testsuite_rootdir, testsuite_tag)
 

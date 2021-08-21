@@ -35,20 +35,20 @@ async def main():
 	for i, mut_info in enumerate(mutations_info):  # for each mutant
 		mutation_id = mut_info.id
 
-		if elab_counter < 0 or elab_counter >= 30:
-			if mutation_id not in mutants_to_skip:
-				elab_counter += 1
-			continue
+		# if elab_counter < 120 or elab_counter >= 150:
+		# 	if mutation_id not in mutants_to_skip:
+		# 		elab_counter += 1
+		# 	continue
 
 		# if i < 450 or i >= 500:
 		# 	continue
 
-		# if mutation_id != 700:
-		# 	continue
+		if mutation_id not in [188, 233, 320, 434, 441, 455, 630, 712]:
+			continue
 
 		if mutation_id in mutants_to_skip:  # check if this mutant must be skipped
 			print(f"Skipped mutation {mutation_id} ('MasterID': {mut_info.master_id})")
-			csv_result_writer.append_only_id(mutation_id)
+			# csv_result_writer.append_only_id(mutation_id)
 			continue
 
 		elab_counter += 1
