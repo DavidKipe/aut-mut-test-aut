@@ -10,13 +10,17 @@ class CSVTotalResultWriter:
 
 	_map_out_file = dict()
 
+	_map_initials_only_ids = dict()
+
 	def __init__(self, execution_tag, test_suite_tags):
 		out_dir = output_dir(execution_tag)
 
 		self._map_out_file[self._OVERALL_RESULT_TAG] = os.path.join(out_dir, 'results.csv')  # name of the overall results file
+		self._map_initials_only_ids[self._OVERALL_RESULT_TAG] = []
 
 		for testsuite_tag in test_suite_tags:  # save in a map all the pairs (testsuite_tag, file_name) for each test suite
-			self._map_out_file[testsuite_tag] = os.path.join(out_dir, 'detail_results_for_{}.csv'.format(testsuite_tag))
+			self._map_out_file[testsuite_tag] = os.path.join(out_dir, f'detail_results_for_{testsuite_tag}.csv')
+			self._map_initials_only_ids[testsuite_tag] = []  # init empty lists for the initial skipped (only IDs) mutants
 
 	def __init_overall(self):  # create (overwrite if exists) the 'results.csv' file and write the columns header
 		header_row = [  # for the MutationInfo
@@ -42,7 +46,9 @@ class CSVTotalResultWriter:
 			'Total execution time (sec)',
 		] * (len(self._map_out_file) - 1)
 
-		self.__write_csv_row(self._OVERALL_RESULT_TAG, header_row, is_header=True)
+		testsuite_tag = self._OVERALL_RESULT_TAG
+		self.__write_csv_row(testsuite_tag, header_row, is_header=True)
+		self.__append_initial_only_ids(testsuite_tag)
 
 	def __init_detail_for(self, mut_result):
 		header_row = [  # for the MutationInfo (without test suite tag)
@@ -68,7 +74,14 @@ class CSVTotalResultWriter:
 		for test_result in mut_result.detailed_test_results:  # for test cases
 			header_row.append(test_result.name)
 
-		self.__write_csv_row(mut_result.test_suite_tag, header_row, is_header=True)
+		testsuite_tag = mut_result.test_suite_tag
+		self.__write_csv_row(testsuite_tag, header_row, is_header=True)
+		self.__append_initial_only_ids(testsuite_tag)
+
+	def __append_initial_only_ids(self, testsuite_tag):
+		for mut_id in self._map_initials_only_ids[testsuite_tag]:  # append the initial only IDs
+			self.__write_csv_row(testsuite_tag, [mut_id])  # append only the first value column of id
+		self._map_initials_only_ids[testsuite_tag].clear()
 
 	def append_overall_result(self, mutation_info):  # create and append to 'results.csv' a new line with the results of the mutant passed
 		if not os.path.exists(self._map_out_file[self._OVERALL_RESULT_TAG]):  # if file for the main result does not exist
@@ -144,6 +157,8 @@ class CSVTotalResultWriter:
 		for testsuite_tag, file_path in self._map_out_file.items():
 			if os.path.exists(file_path):  # if file exists
 				self.__write_csv_row(testsuite_tag, [mutation_id])  # append only the first value column of id
+			else:
+				self._map_initials_only_ids[testsuite_tag].append(mutation_id)  # add current ID to the list to be inserted when the file will be created and initialized
 
 	def __write_csv_row(self, file_tag, row_list, is_header=False):
 		with open(self._map_out_file[file_tag], 'w' if is_header else 'a', newline='') as csv_file:
