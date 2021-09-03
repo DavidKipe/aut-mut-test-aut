@@ -18,12 +18,13 @@ async def main():
 	revert_project_to_orig()  # ensure the project to be original at the beginning
 
 	file_mutants_to_be_read = 'resources/shopizer_selected_mutations_max3.json'
+	#file_mutants_to_be_read = 'resources/mutations_petclinic.json'
 	mutations_info = read_mut_infos_from_file(file_mutants_to_be_read)  # read the info about mutations
 
 	mutated_app_manager = MutatedAppManager()
 	mutated_app_manager.reset_application_state()  # ensure to reset the application state before the first mutation
 
-	mutant_to_be_run = 1754
+	mutant_to_be_run = 1780
 
 	for i, mut_info in enumerate(mutations_info):  # for each mutant
 

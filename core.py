@@ -36,12 +36,21 @@ async def main():
 
 	mutated_app_manager.reset_application_state()  # ensure to reset the application state before the first mutation
 
+	elab_counter = 0  # this counter counts the number of mutants calculated or to be calculated
 	for i, mut_info in enumerate(mutations_info):  # for each mutant
 		mutation_id = mut_info.id
 
+		# if elab_counter < 150 or elab_counter >= 200:
+		# 	if mutation_id not in mutants_to_skip:
+		# 		elab_counter += 1
+		# 	continue
+
 		if mutation_id in mutants_to_skip:  # check if this mutant must be skipped
+			print(f"Skipped mutation {mutation_id} ('MasterID': {mut_info.master_id})")
 			csv_result_writer.append_only_id(mutation_id)
 			continue
+
+		elab_counter += 1
 
 		print(f"[Counter: {i}] Mutant ID: {mutation_id} ('MasterID': {mut_info.master_id})")
 
