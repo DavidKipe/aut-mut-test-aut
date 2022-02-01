@@ -1,5 +1,6 @@
-# AutMutTestAut
+# Mutta
 ### Automatic Mutations for Test Automation
+automatic **MUT**ations for **T**est **A**utomation
 
 ## Overview
 This Python application is actually a set of tools that automates the source code mutation of a Java application under test, consequently automates the execution of test suites on mutated application and retrieves all the results
